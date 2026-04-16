@@ -1,0 +1,1389 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if form.instance.pk %}
+    Редактирование объявления — PENDIX
+{% else %}
+    Новое объявление — PENDIX
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --color-primary: #ff006e;
+        --color-primary-light: #ff4d94;
+        --color-dark: #002f34;
+        --color-text: #002f34;
+        --color-text-secondary: #708487;
+        --color-border: #dfe7ea;
+        --color-error: #c1124d;
+        --color-error-bg: #fff1f5;
+        --color-error-border: #ffd3e2;
+        --color-success: #10b981;
+        --color-bg-light: #f7f9fa;
+        --color-bg-lighter: #f4f7f8;
+        --radius-sm: 12px;
+        --radius-md: 14px;
+        --radius-lg: 24px;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 18px 42px rgba(20, 20, 43, 0.06);
+        --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.16);
+        --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* ============ LAYOUT ============ */
+    .publish-page {
+        min-height: 100vh;
+        padding: 32px 0 60px;
+        background: linear-gradient(180deg, #fff8fb 0%, #ffffff 100%);
+    }
+
+    .publish-shell {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .publish-card {
+        background: #fff;
+        border: 1px solid #f1e7ec;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    /* ============ HEADER ============ */
+    .publish-top {
+        padding: 24px;
+        border-bottom: 1px solid #f3f4f6;
+        background: linear-gradient(135deg, var(--color-dark) 0%, #0a4a52 100%);
+        color: #fff;
+    }
+
+    .publish-top h1 {
+        margin-bottom: 8px;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .publish-top p {
+        margin-bottom: 18px;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    /* ============ STEPS BAR ============ */
+    .steps-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .step-pill {
+        padding: 10px 12px;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.72);
+        transition: var(--transition);
+    }
+
+    .step-pill.active,
+    .step-pill.done {
+        background: #ffffff;
+        color: var(--color-dark);
+    }
+
+    /* ============ BODY ============ */
+    .publish-body {
+        padding: 24px;
+    }
+
+    /* ============ WIZARD STEPS ============ */
+    .wizard-step {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .wizard-step.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .step-title {
+        margin-bottom: 6px;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--color-dark);
+    }
+
+    .step-subtitle {
+        margin-bottom: 18px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--color-text-secondary);
+    }
+
+    /* ============ FORM GRID ============ */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* ============ INPUT GROUP ============ */
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .input-group label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--color-dark);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .field-hint,
+    .meta-text {
+        font-size: 12px;
+        line-height: 1.5;
+        color: #7d8f91;
+    }
+
+    /* ============ FORM INPUTS ============ */
+    input[type="text"],
+    input[type="tel"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 15px 16px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        font-size: 15px;
+        color: var(--color-dark);
+        background: #fff;
+        font-family: inherit;
+        outline: none;
+        transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px rgba(255, 0, 110, 0.1);
+        background-color: #fafbfc;
+    }
+
+    textarea {
+        min-height: 170px;
+        resize: vertical;
+        line-height: 1.55;
+    }
+
+    /* ============ PRICE & CURRENCY ============ */
+    .price-currency-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+    }
+
+    .price-input-wrapper {
+        position: relative;
+    }
+
+    .price-input-wrapper::before {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23708487' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M8 12h8M12 8v8'/%3E%3C/svg%3E") no-repeat center;
+        background-size: contain;
+        pointer-events: none;
+    }
+
+    .price-input-wrapper input[type="number"] {
+        padding-left: 44px;
+    }
+
+    /* ============ SELECT/DROPDOWN ============ */
+    select {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        padding-right: 40px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23002f34' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-color: #fff;
+        transition: var(--transition);
+    }
+
+    select:hover {
+        border-color: var(--color-primary-light);
+        background-color: #fafbfc;
+    }
+
+    select:focus {
+        border-color: var(--color-primary);
+        background-color: #fafbfc;
+    }
+
+    /* ============ ERRORS ============ */
+    .field-errors {
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        background: var(--color-error-bg);
+        border: 1px solid var(--color-error-border);
+        color: var(--color-error);
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .field-errors ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    /* ============ GALLERY SECTION ============ */
+    .gallery-section {
+        margin-bottom: 24px;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .gallery-item {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--color-bg-light);
+        border: 2px solid var(--color-border);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .gallery-item:hover {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px rgba(255, 0, 110, 0.08);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .gallery-item.add-photo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.05), rgba(255, 77, 148, 0.05));
+        border: 2px dashed var(--color-primary);
+        cursor: pointer;
+    }
+
+    .gallery-item.add-photo:hover {
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(255, 77, 148, 0.1));
+        border-color: var(--color-primary-light);
+    }
+
+    .add-photo-icon {
+        font-size: 32px;
+        color: var(--color-primary);
+    }
+
+    .gallery-item-delete {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 28px;
+        height: 28px;
+        background: rgba(0, 0, 0, 0.7);
+        border: none;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: var(--transition);
+    }
+
+    .gallery-item:hover .gallery-item-delete {
+        opacity: 1;
+    }
+
+    .gallery-item-delete:hover {
+        background: var(--color-error);
+    }
+
+    #gallery-input {
+        display: none;
+    }
+
+    .gallery-counter {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        margin-top: 8px;
+    }
+
+    .gallery-counter.warning {
+        color: var(--color-error);
+    }
+
+    /* ============ CATEGORY SELECTOR ============ */
+    .category-selector-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 15px 16px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: #fff;
+        color: var(--color-dark);
+        text-align: left;
+        cursor: pointer;
+        font-size: 15px;
+        font: inherit;
+        transition: var(--transition);
+    }
+
+    .category-selector-btn:hover {
+        border-color: var(--color-primary-light);
+        background: #fafbfc;
+    }
+
+    .category-selector-btn.selected {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px rgba(255, 0, 110, 0.08);
+        background: #fafbfc;
+    }
+
+    .category-placeholder {
+        color: #7d8f91;
+    }
+
+    .category-selector-btn.selected .category-placeholder {
+        color: var(--color-dark);
+        font-weight: 700;
+    }
+
+    /* ============ MAP ============ */
+    .map-wrap {
+        overflow: hidden;
+        border: 1.5px solid var(--color-border);
+        border-radius: 18px;
+        margin-top: 12px;
+    }
+
+    #map {
+        height: 320px;
+        background: var(--color-bg-light);
+    }
+
+    .map-error {
+        padding: 16px;
+        background: var(--color-error-bg);
+        border: 1px solid var(--color-error-border);
+        border-radius: var(--radius-md);
+        color: var(--color-error);
+        font-size: 13px;
+        display: none;
+    }
+
+    .map-error.show {
+        display: block;
+    }
+
+    /* ============ FOOTER ============ */
+    .wizard-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #eef1f3;
+    }
+
+    .footer-note {
+        font-size: 13px;
+        line-height: 1.5;
+        color: #6f8386;
+    }
+
+    .footer-actions {
+        display: flex;
+        gap: 12px;
+        margin-left: auto;
+    }
+
+    /* ============ BUTTONS ============ */
+    .wizard-btn,
+    .publish-btn {
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+        font: inherit;
+        transition: var(--transition);
+        white-space: nowrap;
+    }
+
+    .wizard-btn.secondary {
+        background: var(--color-bg-lighter);
+        color: var(--color-dark);
+        border: 1px solid var(--color-border);
+    }
+
+    .wizard-btn.secondary:hover:not(:disabled) {
+        background: #e8ecef;
+        border-color: #c8d0d3;
+        transform: translateY(-1px);
+    }
+
+    .wizard-btn.primary,
+    .publish-btn {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+        color: #fff;
+        box-shadow: 0 14px 28px rgba(255, 0, 110, 0.18);
+    }
+
+    .wizard-btn.primary:hover:not(:disabled),
+    .publish-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 36px rgba(255, 0, 110, 0.24);
+    }
+
+    .wizard-btn.primary:active:not(:disabled),
+    .publish-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .publish-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    /* ============ MODAL ============ */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        background: rgba(10, 16, 20, 0.52);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        animation: fadeIn var(--transition);
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        width: 100%;
+        max-width: 540px;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--color-dark);
+    }
+
+    .modal-close {
+        font-size: 30px;
+        line-height: 1;
+        color: #7d8f91;
+        cursor: pointer;
+        transition: color var(--transition);
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    .modal-close:hover {
+        color: var(--color-primary);
+    }
+
+    /* ============ CATEGORIES LIST ============ */
+    .category-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .cat-item {
+        padding: 14px 16px;
+        background: #fff;
+        border: 1px solid #e7edef;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .cat-item:hover {
+        border-color: var(--color-primary-light);
+        background: #fff5f9;
+        transform: translateX(4px);
+    }
+
+    .cat-item strong {
+        color: var(--color-dark);
+        font-size: 15px;
+    }
+
+    .more-categories-btn {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-weight: 700;
+        color: var(--color-primary);
+        background: #fff8fb;
+        border: 1px dashed #ff88b5;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .more-categories-btn:hover {
+        background: #fff0f7;
+        border-color: var(--color-primary);
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 768px) {
+        .publish-top h1 {
+            font-size: 22px;
+        }
+
+        .step-title {
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .publish-page {
+            padding: 16px 0 40px;
+        }
+
+        .publish-top,
+        .publish-body {
+            padding: 18px;
+        }
+
+        .steps-bar,
+        .form-grid,
+        .price-currency-row {
+            grid-template-columns: 1fr;
+        }
+
+        .step-pill {
+            font-size: 11px;
+            padding: 8px 10px;
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        }
+
+        .wizard-footer {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .footer-note {
+            margin-bottom: 12px;
+        }
+
+        .footer-actions {
+            width: 100%;
+            margin-left: 0;
+            flex-direction: column;
+        }
+
+        .wizard-btn,
+        .publish-btn {
+            width: 100%;
+        }
+
+        .modal-content {
+            padding: 16px;
+        }
+
+        .category-list {
+            max-height: calc(80vh - 100px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="publish-page">
+    <div class="publish-shell">
+        <div class="publish-card">
+            <!-- Header -->
+            <div class="publish-top">
+                <h1>
+                    {% if form.instance.pk %}
+                        Редактирование объявления
+                    {% else %}
+                        Новое объявление
+                    {% endif %}
+                </h1>
+                <p>
+                    {% if form.instance.pk %}
+                        Обнови фотографии, описание, цену и контакты объявления.
+                    {% else %}
+                        Короткая пошаговая форма: без длинного списка и лишней перегрузки.
+                    {% endif %}
+                </p>
+
+                <div class="steps-bar">
+                    <div class="step-pill active" data-step-pill="1">1. Фото</div>
+                    <div class="step-pill" data-step-pill="2">2. Описание</div>
+                    <div class="step-pill" data-step-pill="3">3. Контакты</div>
+                    <div class="step-pill" data-step-pill="4">
+                        {% if form.instance.pk %}
+                            4. Сохранение
+                        {% else %}
+                            4. Публикация
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="publish-body">
+                {% if form.non_field_errors %}
+                    <div class="field-errors" style="margin-bottom: 16px;">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <form
+                    method="post"
+                    enctype="multipart/form-data"
+                    id="main-ad-form"
+                    novalidate
+                    data-initial-step="{{ initial_step|default:1 }}"
+                >
+                    {% csrf_token %}
+
+                    <!-- Step 1: Gallery -->
+                    <div class="wizard-step active" data-step="1">
+                        <h2 class="step-title">📸 Загрузи фотографии</h2>
+                        <p class="step-subtitle">
+                            Качественные фото привлекут больше внимания. Минимум 1, максимум 10 изображений.
+                        </p>
+
+                        <div class="gallery-section">
+                            <div class="gallery-grid" id="gallery-grid">
+                                <div class="gallery-item add-photo" id="add-photo-btn">
+                                    <span class="add-photo-icon">+</span>
+                                </div>
+                            </div>
+                            <input
+                                type="file"
+                                id="gallery-input"
+                                name="gallery"
+                                multiple
+                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                            >
+                            <div class="gallery-counter">
+                                <span id="gallery-count">0</span> / 10 фото
+                            </div>
+                            <div id="gallery-error" class="field-errors" style="display: none;">
+                                ⚠️ Загрузите минимум 1 фото перед продолжением.
+                            </div>
+                        </div>
+
+                        <div class="wizard-footer">
+                            <div class="footer-note">Фото должны быть четкими и привлекательными.</div>
+                            <div class="footer-actions">
+                                <button type="button" class="wizard-btn primary" data-next-step="2">
+                                    Продолжить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Basic Info -->
+                    <div class="wizard-step" data-step="2">
+                        <h2 class="step-title">Основная информация</h2>
+                        <p class="step-subtitle">
+                            Заполни ключевые поля так, чтобы покупатель сразу понял, что именно ты продаёшь.
+                        </p>
+
+                        <div class="form-grid">
+                            <!-- Title -->
+                            <div class="input-group full-width">
+                                <label for="{{ form.title.id_for_label }}">Название товара <span style="color: var(--color-error);">*</span></label>
+                                {{ form.title }}
+                                <div class="field-hint">
+                                    Коротко и конкретно: модель, состояние, главное преимущество.
+                                </div>
+                                {% if form.title.errors %}
+                                    <div class="field-errors">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Category -->
+                            <div class="input-group full-width">
+                                <label>Категория <span style="color: var(--color-error);">*</span></label>
+                                <button type="button" class="category-selector-btn" id="cat-trigger">
+                                    <span id="display-cat" class="category-placeholder">Выберите категорию</span>
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                                {{ form.category.as_hidden }}
+                                <div class="field-hint">
+                                    Категория помогает показать объявление нужной аудитории.
+                                </div>
+                                <div id="category-error" class="field-errors" style="display: none;">
+                                    ⚠️ Выберите категорию перед продолжением.
+                                </div>
+                                {% if form.category.errors %}
+                                    <div class="field-errors">{{ form.category.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Description -->
+                            <div class="input-group full-width">
+                                <label for="{{ form.description.id_for_label }}">Описание <span style="color: var(--color-error);">*</span></label>
+                                {{ form.description }}
+                                <div class="description-meta">
+                                    <span class="field-hint">
+                                        Напиши состояние, комплектацию, дефекты, условия передачи.
+                                    </span>
+                                    <span id="description-counter" class="description-counter">0 / 80+ символов</span>
+                                </div>
+                                <div id="description-error" class="field-errors" style="display: none;">
+                                    ⚠️ Описание должно содержать минимум 80 символов без учёта лишних пробелов.
+                                </div>
+                                {% if form.description.errors %}
+                                    <div class="field-errors">{{ form.description.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="wizard-footer">
+                            <div class="footer-note">Сначала описание и категория, потом цена и контакты.</div>
+                            <div class="footer-actions">
+                                <button type="button" class="wizard-btn secondary" data-prev-step="1">Назад</button>
+                                <button type="button" class="wizard-btn primary" data-next-step="3">Продолжить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Price & Contacts -->
+                    <div class="wizard-step" data-step="3">
+                        <h2 class="step-title">💰 Цена и контакты</h2>
+                        <p class="step-subtitle">
+                            Покупателю должно быть сразу понятно, сколько стоит товар и как с тобой связаться.
+                        </p>
+
+                        <div class="form-grid">
+                            <!-- Price & Currency -->
+                            <div class="full-width">
+                                <div class="price-currency-row">
+                                    <div class="input-group">
+                                        <label for="{{ form.price.id_for_label }}">Цена <span style="color: var(--color-error);">*</span></label>
+                                        <div class="price-input-wrapper">
+                                            {{ form.price }}
+                                        </div>
+                                        {% if form.price.errors %}
+                                            <div class="field-errors">{{ form.price.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="input-group">
+                                        <label for="{{ form.currency.id_for_label }}">Валюта</label>
+                                        {{ form.currency }}
+                                        {% if form.currency.errors %}
+                                            <div class="field-errors">{{ form.currency.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="input-group full-width">
+                                <label for="{{ form.phone.id_for_label }}">Телефон <span style="color: var(--color-error);">*</span></label>
+                                {{ form.phone }}
+                                <div class="field-hint">
+                                    Укажи номер в формате, по которому с тобой действительно можно быстро связаться.
+                                </div>
+                                {% if form.phone.errors %}
+                                    <div class="field-errors">{{ form.phone.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="wizard-footer">
+                            <div class="footer-note">
+                                Остался последний шаг — карта и
+                                {% if form.instance.pk %}
+                                    сохранение
+                                {% else %}
+                                    публикация
+                                {% endif %}.
+                            </div>
+                            <div class="footer-actions">
+                                <button type="button" class="wizard-btn secondary" data-prev-step="2">Назад</button>
+                                <button type="button" class="wizard-btn primary" data-next-step="4">Продолжить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Map & Publish -->
+                    <div class="wizard-step" data-step="4">
+                        <h2 class="step-title">
+                            {% if form.instance.pk %}
+                                📍 Сохранение изменений
+                            {% else %}
+                                📍 Укажи местоположение
+                            {% endif %}
+                        </h2>
+                        <p class="step-subtitle">
+                            Отметь точку на карте, чтобы пользователям было легче ориентироваться. Геолокация автоматически определит ваше положение.
+                        </p>
+
+                        <!-- Map -->
+                        <div class="map-wrap">
+                            <div id="map"></div>
+                        </div>
+
+                        <div id="map-error" class="map-error">
+                            ⚠️ Карта временно недоступна, но вы можете продолжить публикацию.
+                        </div>
+
+                        <div class="field-hint" style="margin-top: 10px;">
+                            Нажмите на карту, чтобы указать точное местоположение объявления.
+                        </div>
+
+                        {{ form.latitude.as_hidden }}
+                        {{ form.longitude.as_hidden }}
+
+                        <!-- Footer Actions -->
+                        <div class="wizard-footer">
+                            <div class="footer-note">
+                                {% if form.instance.pk %}
+                                    Перед сохранением проверь описание, категорию, фотографии и контакты.
+                                {% else %}
+                                    Перед публикацией проверь все данные еще раз. Объявление появится в каталоге моментально!
+                                {% endif %}
+                            </div>
+                            <div class="footer-actions">
+                                <button type="button" class="wizard-btn secondary" data-prev-step="3">Назад</button>
+                                <button type="submit" class="publish-btn">
+                                    {% if form.instance.pk %}
+                                        ✓ Сохранить изменения
+                                    {% else %}
+                                        ✓ Опубликовать объявление
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="modal-overlay">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title">Выберите категорию</h3>
+            <button type="button" class="modal-close" id="close-category-modal">&times;</button>
+        </div>
+
+        <div class="category-list">
+            {% for value, text in form.fields.category.choices %}
+                {% if value %}
+                    <div
+                        class="cat-item {% if forloop.counter > 8 %}hidden-cat{% endif %}"
+                        data-value="{{ value }}"
+                        data-label="{{ text }}"
+                        onclick="selectCat('{{ text|escapejs }}', '{{ value|escapejs }}')"
+                    >
+                        <strong>{{ text }}</strong>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div id="more-btn" class="more-categories-btn" onclick="showAllCats()">
+            Показать больше категорий
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ==================== GALLERY MANAGEMENT ====================
+    class GalleryManager {
+        constructor() {
+            this.maxPhotos = 10;
+            this.minPhotos = 1;
+            this.photos = [];
+            this.init();
+        }
+
+        init() {
+            this.galleryGrid = document.getElementById('gallery-grid');
+            this.galleryInput = document.getElementById('gallery-input');
+            this.addPhotoBtn = document.getElementById('add-photo-btn');
+            this.galleryCount = document.getElementById('gallery-count');
+            this.galleryError = document.getElementById('gallery-error');
+
+            if (this.addPhotoBtn) {
+                this.addPhotoBtn.addEventListener('click', () => this.handleAddPhoto());
+            }
+
+            if (this.galleryInput) {
+                this.galleryInput.addEventListener('change', (e) => this.handleFileSelect(e));
+            }
+        }
+
+        handleAddPhoto() {
+            if (this.photos.length < this.maxPhotos) {
+                this.galleryInput.click();
+            }
+        }
+
+        handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            const canAdd = this.maxPhotos - this.photos.length;
+            const filesToAdd = files.slice(0, canAdd);
+
+            filesToAdd.forEach(file => {
+                if (this.isValidImage(file)) {
+                    this.addPhoto(file);
+                }
+            });
+
+            this.updateGalleryUI();
+        }
+
+        isValidImage(file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            const validSize = file.size <= 5 * 1024 * 1024; // 5MB
+            return validTypes.includes(file.type) && validSize;
+        }
+
+        addPhoto(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.photos.push({
+                    file: file,
+                    preview: e.target.result
+                });
+                this.updateGalleryUI();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removePhoto(index) {
+            this.photos.splice(index, 1);
+            this.updateGalleryUI();
+        }
+
+        updateGalleryUI() {
+            // Clear gallery
+            this.galleryGrid.innerHTML = '';
+
+            // Add photos
+            this.photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <img src="${photo.preview}" alt="Фото ${index + 1}">
+                    <button type="button" class="gallery-item-delete">×</button>
+                `;
+
+                item.querySelector('.gallery-item-delete').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.removePhoto(index);
+                });
+
+                this.galleryGrid.appendChild(item);
+            });
+
+            // Add button
+            if (this.photos.length < this.maxPhotos) {
+                const addBtn = document.createElement('div');
+                addBtn.className = 'gallery-item add-photo';
+                addBtn.id = 'add-photo-btn';
+                addBtn.innerHTML = '<span class="add-photo-icon">+</span>';
+                addBtn.addEventListener('click', () => this.handleAddPhoto());
+                this.galleryGrid.appendChild(addBtn);
+            }
+
+            // Update counter
+            this.galleryCount.textContent = this.photos.length;
+
+            // Check validation
+            if (this.photos.length >= this.minPhotos) {
+                this.galleryError.style.display = 'none';
+            }
+        }
+
+        isValid() {
+            return this.photos.length >= this.minPhotos && this.photos.length <= this.maxPhotos;
+        }
+    }
+
+    // ==================== MODAL FUNCTIONS ====================
+    function toggleModal(show) {
+        const modal = document.getElementById('categoryModal');
+        if (modal) {
+            modal.classList.toggle('active', show);
+        }
+    }
+
+    function showAllCats() {
+        document.querySelectorAll('.hidden-cat').forEach(function (el) {
+            el.style.display = 'block';
+        });
+
+        const moreButton = document.getElementById('more-btn');
+        if (moreButton) {
+            moreButton.style.display = 'none';
+        }
+    }
+
+    function getCategoryInput() {
+        return document.querySelector('input[name="category"]');
+    }
+
+    function selectCat(label, value) {
+        const categoryInput = getCategoryInput();
+        const displayCat = document.getElementById('display-cat');
+        const trigger = document.getElementById('cat-trigger');
+        const categoryError = document.getElementById('category-error');
+
+        if (displayCat) {
+            displayCat.textContent = label;
+            displayCat.classList.remove('category-placeholder');
+        }
+
+        if (trigger) {
+            trigger.classList.add('selected');
+        }
+
+        if (categoryInput) {
+            categoryInput.value = value;
+        }
+
+        if (categoryError) {
+            categoryError.style.display = 'none';
+        }
+
+        toggleModal(false);
+    }
+
+    // ==================== VALIDATION FUNCTIONS ====================
+    function normalizeDescriptionLength(value) {
+        return value.replace(/\s+/g, ' ').trim().length;
+    }
+
+    function validateStep(stepNumber) {
+        const categoryInput = getCategoryInput();
+        const categoryError = document.getElementById('category-error');
+        const descriptionInput = document.querySelector('textarea[name="description"]');
+        const descriptionError = document.getElementById('description-error');
+        const galleryError = document.getElementById('gallery-error');
+
+        if (stepNumber === 1) {
+            // Validate gallery
+            if (!galleryManager.isValid()) {
+                if (galleryError) galleryError.style.display = 'block';
+                return false;
+            }
+        }
+
+        if (stepNumber === 2) {
+            // Validate category
+            if (!categoryInput.value) {
+                if (categoryError) categoryError.style.display = 'block';
+                return false;
+            } else {
+                if (categoryError) categoryError.style.display = 'none';
+            }
+
+            // Validate description
+            if (descriptionInput) {
+                const len = normalizeDescriptionLength(descriptionInput.value);
+                if (len < 80) {
+                    if (descriptionError) descriptionError.style.display = 'block';
+                    return false;
+                } else {
+                    if (descriptionError) descriptionError.style.display = 'none';
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // ==================== GEOLOCATION ====================
+    function initializeMap() {
+        const mapElement = document.getElementById('map');
+        const mapError = document.getElementById('map-error');
+        const latInput = document.querySelector('input[name="latitude"]');
+        const lonInput = document.querySelector('input[name="longitude"]');
+
+        if (!mapElement || typeof L === 'undefined') {
+            if (mapError) mapError.classList.add('show');
+            return;
+        }
+
+        try {
+            window._adMapInstance = L.map('map').setView([41.2995, 69.2401], 13); // Ташкент
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(window._adMapInstance);
+
+            let marker = null;
+
+            window._adMapInstance.on('click', (e) => {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+
+                if (marker) {
+                    window._adMapInstance.removeLayer(marker);
+                }
+
+                marker = L.marker([lat, lng]).addTo(window._adMapInstance);
+
+                if (latInput) latInput.value = lat.toFixed(6);
+                if (lonInput) lonInput.value = lng.toFixed(6);
+            });
+
+            // Try geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        window._adMapInstance.setView([lat, lng], 14);
+
+                        if (marker) {
+                            window._adMapInstance.removeLayer(marker);
+                        }
+
+                        marker = L.marker([lat, lng]).addTo(window._adMapInstance);
+
+                        if (latInput) latInput.value = lat.toFixed(6);
+                        if (lonInput) lonInput.value = lng.toFixed(6);
+                    },
+                    () => {
+                        console.log('Geolocation not available');
+                    }
+                );
+            }
+        } catch (error) {
+            if (mapError) mapError.classList.add('show');
+            console.error('Map initialization error:', error);
+        }
+    }
+
+    // ==================== MAIN INIT ====================
+    let galleryManager;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize gallery
+        galleryManager = new GalleryManager();
+
+        const form = document.getElementById('main-ad-form');
+        const stepBlocks = Array.from(document.querySelectorAll('.wizard-step'));
+        const stepPills = Array.from(document.querySelectorAll('[data-step-pill]'));
+
+        const descriptionInput = document.querySelector('textarea[name="description"]');
+        const descriptionCounter = document.getElementById('description-counter');
+        const descriptionError = document.getElementById('description-error');
+
+        const categoryTrigger = document.getElementById('cat-trigger');
+        const categoryModal = document.getElementById('categoryModal');
+        const closeCategoryModal = document.getElementById('close-category-modal');
+        const categoryInput = getCategoryInput();
+
+        let currentStep = form ? Number(form.dataset.initialStep || 1) : 1;
+
+        // ==================== STEP UI UPDATE ====================
+        function updateStepUI(step) {
+            currentStep = step;
+
+            stepBlocks.forEach(function (block) {
+                block.classList.toggle('active', Number(block.dataset.step) === step);
+            });
+
+            stepPills.forEach(function (pill) {
+                const pillStep = Number(pill.dataset.stepPill);
+                pill.classList.toggle('active', pillStep === step);
+                pill.classList.toggle('done', pillStep < step);
+            });
+
+            // Initialize map on step 4
+            if (step === 4 && window._adMapInstance) {
+                setTimeout(() => {
+                    window._adMapInstance.invalidateSize();
+                }, 200);
+            } else if (step === 4 && !window._adMapInstance) {
+                initializeMap();
+            }
+
+            // Scroll to top
+            document.querySelector('.publish-top').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        updateStepUI(currentStep);
+
+        // ==================== STEP NAVIGATION ====================
+        document.querySelectorAll('[data-next-step]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const nextStep = Number(btn.dataset.nextStep);
+
+                // Validate before moving forward
+                if (validateStep(currentStep)) {
+                    updateStepUI(nextStep);
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-prev-step]').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                updateStepUI(Number(btn.dataset.prevStep));
+            });
+        });
+
+        // ==================== CATEGORY MODAL ====================
+        if (categoryTrigger) {
+            categoryTrigger.addEventListener('click', function (e) {
+                e.preventDefault();
+                toggleModal(true);
+            });
+        }
+
+        if (closeCategoryModal) {
+            closeCategoryModal.addEventListener('click', function () {
+                toggleModal(false);
+            });
+        }
+
+        if (categoryModal) {
+            categoryModal.addEventListener('click', function (e) {
+                if (e.target === categoryModal) {
+                    toggleModal(false);
+                }
+            });
+        }
+
+        // ==================== DESCRIPTION COUNTER ====================
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', function () {
+                const len = normalizeDescriptionLength(this.value);
+                if (descriptionCounter) {
+                    descriptionCounter.textContent = len + ' / 80+ символов';
+                    if (len >= 80) {
+                        descriptionCounter.classList.remove('is-invalid');
+                        descriptionCounter.classList.add('is-valid');
+                        if (descriptionError) descriptionError.style.display = 'none';
+                    } else {
+                        descriptionCounter.classList.add('is-invalid');
+                        descriptionCounter.classList.remove('is-valid');
+                    }
+                }
+            });
+
+            descriptionInput.dispatchEvent(new Event('input'));
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (!galleryManager.isValid()) {
+                    e.preventDefault();
+                    document.getElementById('gallery-error').style.display = 'block';
+                    updateStepUI(1);
+                    return false;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

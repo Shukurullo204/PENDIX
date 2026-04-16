@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --hot-pink: #ff006e;
+        --soft-pink: #fff0f5;
+        --olx-dark: #002f34;
+        --bg-gray: #f2f4f5;
+    }
+
+    body { background-color: var(--bg-gray); font-family: 'Segoe UI', sans-serif; }
+
+    .page-wrapper { padding-top: 20px; padding-bottom: 80px; min-height: 80vh; }
+
+    /* === КНОПКА ВЕРНУТЬСЯ === */
+    .back-nav { margin-bottom: 20px; }
+    .btn-back-pink {
+        display: inline-flex;
+        align-items: center;
+        background: var(--hot-pink);
+        color: #fff;
+        padding: 8px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(255, 0, 110, 0.2);
+    }
+    .btn-back-pink:hover { transform: translateX(-5px); color: #fff; opacity: 0.9; }
+
+    /* === ШАПКА ПРОФИЛЯ === */
+    .author-profile-header {
+        background: #fff; border-radius: 16px; padding: 30px; margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-bottom: 4px solid var(--hot-pink);
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 20px;
+    }
+
+    .author-info-left { display: flex; align-items: center; gap: 25px; }
+
+    .author-avatar-big {
+        width: 100px; height: 100px; background: #cedee0; color: #fff;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px;
+    }
+
+    .author-name-title { font-size: 24px; font-weight: 800; color: var(--olx-dark); margin-bottom: 8px; }
+    .author-meta-lines { font-size: 14px; color: #7f9799; display: flex; flex-direction: column; gap: 4px; }
+
+    .btn-msg-original {
+        background: var(--olx-dark); color: #fff; padding: 14px 28px;
+        border-radius: 8px; text-decoration: none; font-weight: 700;
+        transition: 0.3s; white-space: nowrap;
+    }
+    .btn-msg-original:hover { background: #004a52; color: #fff; }
+
+    /* === ПАНЕЛЬ ФИЛЬТРОВ === */
+    .author-filter-bar {
+        background: #fff; padding: 15px 25px; border-radius: 12px;
+        margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;
+        gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    .author-search-box { position: relative; flex-grow: 1; max-width: 400px; }
+    .author-search-box input {
+        width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #eef0f1;
+        border-radius: 8px; font-size: 14px; outline: none;
+    }
+    .author-search-box::before { content: "🔍"; position: absolute; left: 15px; top: 10px; opacity: 0.5; }
+
+    .sort-select {
+        padding: 8px 12px; border: 1px solid #eef0f1; border-radius: 8px;
+        outline: none; cursor: pointer; font-weight: 600; background: #fff;
+    }
+
+    /* === СЕТКА КАРТОЧЕК === */
+    .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    .ad-card {
+        background: #fff; border-radius: 12px; overflow: hidden; text-decoration: none;
+        color: inherit; transition: 0.3s; border: 1px solid #eef0f1; display: flex; flex-direction: column;
+    }
+    .ad-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    .ad-card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+    .ad-card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+    .ad-card-title { font-size: 16px; font-weight: 600; color: var(--olx-dark); margin-bottom: 10px; }
+    .ad-card-price { font-size: 18px; font-weight: 800; color: var(--hot-pink); margin-top: auto; }
+</style>
+
+<div class="page-wrapper">
+    <div class="container">
+
+        <nav class="back-nav">
+            <a href="javascript:history.back()" class="btn-back-pink">
+                <i class="bi bi-chevron-left"></i> Вернуться
+            </a>
+        </nav>
+
+        <div class="author-profile-header">
+            <div class="author-info-left">
+                <div class="author-avatar-big"><i class="bi bi-person"></i></div>
+                <div class="author-text-data">
+                    <h1 class="author-name-title">{{ author.username }}</h1>
+                    <div class="author-meta-lines">
+                        <span>Ташкент, Узбекистан</span>
+                        <span>На Pendix с {{ author.date_joined|date:"M Y" }} г.</span>
+                        <span style="color: #28a745; font-weight: 600;">Был онлайн недавно</span>
+                    </div>
+                </div>
+            </div>
+            <a href="#" class="btn-msg-original">Написать сообщение</a>
+        </div>
+
+        <div class="author-filter-bar">
+            <form action="" method="get" class="author-search-box">
+                <input type="text" name="q" placeholder="Поиск в объявлениях автора" value="{{ request.GET.q }}">
+            </form>
+
+            <form action="" method="get" class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Сортировать по:</span>
+                <select name="sort" class="sort-select" onchange="this.form.submit()">
+                    <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Новые</option>
+                    <option value="oldest" {% if request.GET.sort == 'oldest' %}selected{% endif %}>Старые</option>
+                    <option value="cheap" {% if request.GET.sort == 'cheap' %}selected{% endif %}>Дешевые</option>
+                    <option value="expensive" {% if request.GET.sort == 'expensive' %}selected{% endif %}>Дорогие</option>
+                </select>
+                {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+            </form>
+        </div>
+
+        <div class="ads-grid">
+            {% for ad in ads %}
+            <a href="{% url 'ad_detail' ad.id %}" class="ad-card">
+                <div class="ad-card-img-wrapper">
+                    {% if ad.images.all %}
+                        <img src="{{ ad.images.first.image.url }}" class="ad-card-img">
+                    {% else %}
+                        <div class="ad-card-img d-flex align-items-center justify-content-center bg-light text-muted">📸</div>
+                    {% endif %}
+                </div>
+                <div class="ad-card-body">
+                    <div class="ad-card-title">{{ ad.title }}</div>
+                    <div class="ad-card-price">{{ ad.price|floatformat:"0" }} $</div>
+                    <div class="ad-card-footer text-muted small mt-2">{{ ad.created_at|date:"j E" }} • Ташкент</div>
+                </div>
+            </a>
+            {% empty %}
+                <p class="text-muted w-100 text-center py-5">Ничего не найдено.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PENDIX — Твоя территория покупок{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        :root {
+            --hot-pink: #ff006e;
+            --deep-pink: #880044;
+            --soft-pink: #fff0f6;
+            --white: #ffffff;
+            --dark: #002f34;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: var(--soft-pink); color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+        /* ===== ШАПКА (БОЛЬШАЯ И ЖИРНАЯ) ===== */
+        .top-header {
+            background: linear-gradient(135deg, var(--deep-pink) 0%, #a01555 100%);
+            color: #ffffff;
+            padding: 24px 0;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .top-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-top {
+            font-size: 52px;
+            font-weight: 900;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: -1.5px;
+            line-height: 1;
+        }
+
+        .logo-top span {
+            color: var(--hot-pink);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Стили для ссылок в шапке (Чат, Избранное, Уведомления) */
+        .header-actions a.action-link {
+            background-color: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 800;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: 1.5px solid rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(10px);
+            letter-spacing: 0.3px;
+        }
+
+        .header-actions a.action-link:hover {
+            background-color: rgba(255, 255, 255, 0.28);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .profile-link-btn {
+            background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%) !important;
+            color: #fff !important;
+            border-color: transparent !important;
+        }
+
+        .profile-link-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4) !important;
+        }
+
+        .post-ad-btn {
+            background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%);
+            color: #fff !important;
+            padding: 13px 28px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .post-ad-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
+        }
+
+        /* ===== ПОИСК ===== */
+        .nav-section {
+            background-color: var(--white);
+            padding: 18px 0;
+            border-bottom: 3px solid var(--hot-pink);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .logo-bottom {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--hot-pink);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .search-form {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .search-form input {
+            width: 100%;
+            padding: 14px 18px 14px 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            background-color: #f8f9fa;
+        }
+
+        .search-form input::placeholder {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .search-form input:focus {
+            border-color: var(--hot-pink);
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.15);
+        }
+
+        .search-form::before {
+            content: "🔍";
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.6;
+            font-size: 18px;
+        }
+
+        /* КОНТЕНТ */
+        main { flex: 1; padding: 30px 0; }
+
+        /* Профессиональный футер */
+        .pro-footer {
+            background-color: #ffffff;
+            border-top: 1px solid #ebedee;
+            padding: 60px 0 30px 0;
+            margin-top: auto;
+            color: #002f34;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+
+        .footer-col ul li a {
+            text-decoration: none;
+            color: #406367;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .footer-col ul li a:hover { color: var(--hot-pink); }
+
+        .f-logo {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--deep-pink);
+            display: block;
+            margin-bottom: 15px;
+        }
+        .f-logo span { color: var(--hot-pink); }
+
+        .f-about {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #7f9799;
+            margin-bottom: 20px;
+        }
+
+        .social-icons { display: flex; gap: 15px; font-size: 20px; cursor: pointer; }
+
+        .footer-bottom {
+            border-top: 1px solid #ebedee;
+            padding-top: 25px;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            font-size: 12px;
+            color: #7f9799;
+        }
+
+        @media (max-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+
+            .logo-top {
+                font-size: 40px;
+            }
+
+            .top-header {
+                padding: 18px 0;
+            }
+
+            .header-actions {
+                gap: 10px;
+            }
+
+            .header-actions a.action-link {
+                font-size: 13px;
+                padding: 10px 16px;
+            }
+
+            .post-ad-btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<header class="top-header">
+    <div class="container">
+        <a href="{% url 'ad_list' %}" class="logo-top">PEN<span>DIX</span></a>
+        <div class="header-actions">
+            <a href="{% url 'chat_list' %}" class="action-link">💬 <span>Чат</span></a>
+            <a href="#" class="action-link">❤️ <span>Избранное</span></a>
+            <a href="#" class="action-link">🔔 <span>Уведомления</span></a>
+
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile_detail' user.id %}" class="action-link profile-link-btn">
+                ⚙️ Профиль
+            </a>
+            {% else %}
+            <a href="javascript:void(0)" onclick="openAuth()" class="action-link login-btn">Войти</a>
+            {% endif %}
+
+            {% include 'includes/post_ad_btn.html' %}
+        </div>
+    </div>
+</header>
+
+<nav class="nav-section">
+    <div class="container">
+        <div class="search-row">
+            <a href="{% url 'ad_list' %}" class="logo-bottom">◎ pendix</a>
+            <form action="{% url 'ad_list' %}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Что ищете сегодня?" value="{{ request.GET.q }}">
+            </form>
+        </div>
+    </div>
+</nav>
+
+{% if request.path == '/' %}
+<div class="container">
+    <div class="banner-box" style="width: 100%; height: 200px; border-radius: 20px; margin: 20px 0; background: linear-gradient(135deg, var(--deep-pink) 0%, var(--hot-pink) 100%); display: flex; flex-direction: column; justify-content: center; padding: 40px; color: #fff;">
+        <h2>Найди то, что влюбишься</h2>
+        <p>Более 500 000 свежих объявлений в Узбекистане</p>
+    </div>
+</div>
+{% endif %}
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="pro-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <span class="f-logo">PEN<span>DIX</span></span>
+                <p class="f-about">Крупнейший сервис объявлений в Узбекистане. Покупайте и продавайте товары из рук в руки быстро и удобно.</p>
+                <div class="social-icons">
+                    <span>📱</span> <span>📸</span> <span>✈️</span>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Разделы</h4>
+                <ul>
+                    <li><a href="{% url 'ad_list' %}">Все объявления</a></li>
+                    <li><a href="#">Популярные категории</a></li>
+                    <li><a href="{% url 'ad_create' %}">Подать объявление</a></li>
+                    <li><a href="#">Магазины</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Информация</h4>
+                <ul>
+                    <li><a href="#">Помощь и обратная связь</a></li>
+                    <li><a href="#">Платные услуги</a></li>
+                    <li><a href="#">Бизнес на Pendix</a></li>
+                    <li><a href="#">Условия использования</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Оферта и Правила</h4>
+                <ul>
+                    <li><a href="#">Публичная оферта</a></li>
+                    <li><a href="#">Политика конфиденциальности</a></li>
+                    <li><a href="#">Правила безопасности</a></li>
+                    <li><a href="#">Карта сайта</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Pendix. Все права защищены. Использование сайта означает согласие с пользовательским соглашением.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
