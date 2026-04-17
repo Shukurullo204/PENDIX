@@ -1,464 +1,464 @@
-{% extends 'base.html' %}
+<!--{% extends 'base.html' %}-->
 
-{% block title %}Чаты - PENDIX{% endblock %}
+<!--{% block title %}Чаты - PENDIX{% endblock %}-->
 
-{% block content %}
-<style>
-    :root {
-        --primary: #ff006e;
-        --primary-dark: #880044;
-        --bg: #f5f7fb;
-        --card: #ffffff;
-        --text: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
-        --success: #16a34a;
-        --shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.06);
-        --shadow-md: 0 10px 25px rgba(2, 6, 23, 0.08);
-        --transition: 160ms ease;
-    }
+<!--{% block content %}-->
+<!--<style>-->
+<!--    :root {-->
+<!--        &#45;&#45;primary: #ff006e;-->
+<!--        &#45;&#45;primary-dark: #880044;-->
+<!--        &#45;&#45;bg: #f5f7fb;-->
+<!--        &#45;&#45;card: #ffffff;-->
+<!--        &#45;&#45;text: #0f172a;-->
+<!--        &#45;&#45;text-muted: #64748b;-->
+<!--        &#45;&#45;border: #e2e8f0;-->
+<!--        &#45;&#45;success: #16a34a;-->
+<!--        &#45;&#45;shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.06);-->
+<!--        &#45;&#45;shadow-md: 0 10px 25px rgba(2, 6, 23, 0.08);-->
+<!--        &#45;&#45;transition: 160ms ease;-->
+<!--    }-->
 
-    * {
-        box-sizing: border-box;
-    }
+<!--    * {-->
+<!--        box-sizing: border-box;-->
+<!--    }-->
 
-    .chat-page {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px 16px;
-    }
+<!--    .chat-page {-->
+<!--        max-width: 1200px;-->
+<!--        margin: 0 auto;-->
+<!--        padding: 24px 16px;-->
+<!--    }-->
 
-    /* ===== ХЕДЕР ===== */
-    .chat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 32px;
-    }
+<!--    /* ===== ХЕДЕР ===== */-->
+<!--    .chat-header {-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: space-between;-->
+<!--        margin-bottom: 32px;-->
+<!--    }-->
 
-    .chat-header__title {
-        font-size: 32px;
-        font-weight: 900;
-        color: var(--text);
-        margin: 0;
-        letter-spacing: -0.02em;
-    }
+<!--    .chat-header__title {-->
+<!--        font-size: 32px;-->
+<!--        font-weight: 900;-->
+<!--        color: var(&#45;&#45;text);-->
+<!--        margin: 0;-->
+<!--        letter-spacing: -0.02em;-->
+<!--    }-->
 
-    .chat-header__actions {
-        display: flex;
-        gap: 12px;
-    }
+<!--    .chat-header__actions {-->
+<!--        display: flex;-->
+<!--        gap: 12px;-->
+<!--    }-->
 
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 11px 22px;
-        border: none;
-        border-radius: 999px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all var(--transition);
-        font-size: 14px;
-    }
+<!--    .btn {-->
+<!--        display: inline-flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: center;-->
+<!--        gap: 8px;-->
+<!--        padding: 11px 22px;-->
+<!--        border: none;-->
+<!--        border-radius: 999px;-->
+<!--        font-weight: 700;-->
+<!--        cursor: pointer;-->
+<!--        transition: all var(&#45;&#45;transition);-->
+<!--        font-size: 14px;-->
+<!--    }-->
 
-    .btn:focus-visible {
-        outline: 3px solid rgba(255, 0, 110, 0.25);
-        outline-offset: 2px;
-    }
+<!--    .btn:focus-visible {-->
+<!--        outline: 3px solid rgba(255, 0, 110, 0.25);-->
+<!--        outline-offset: 2px;-->
+<!--    }-->
 
-    .btn--primary {
-        background: linear-gradient(135deg, var(--primary) 0%, #ff1a7d 100%);
-        color: white;
-    }
+<!--    .btn&#45;&#45;primary {-->
+<!--        background: linear-gradient(135deg, var(&#45;&#45;primary) 0%, #ff1a7d 100%);-->
+<!--        color: white;-->
+<!--    }-->
 
-    .btn--primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
+<!--    .btn&#45;&#45;primary:hover {-->
+<!--        transform: translateY(-2px);-->
+<!--        box-shadow: var(&#45;&#45;shadow-md);-->
+<!--    }-->
 
-    .btn--secondary {
-        background: var(--card);
-        color: var(--text);
-        border: 1.5px solid var(--border);
-    }
+<!--    .btn&#45;&#45;secondary {-->
+<!--        background: var(&#45;&#45;card);-->
+<!--        color: var(&#45;&#45;text);-->
+<!--        border: 1.5px solid var(&#45;&#45;border);-->
+<!--    }-->
 
-    .btn--secondary:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
+<!--    .btn&#45;&#45;secondary:hover {-->
+<!--        border-color: var(&#45;&#45;primary);-->
+<!--        color: var(&#45;&#45;primary);-->
+<!--    }-->
 
-    /* ===== ПОИСК ===== */
-    .search-box {
-        margin-bottom: 24px;
-    }
+<!--    /* ===== ПОИСК ===== */-->
+<!--    .search-box {-->
+<!--        margin-bottom: 24px;-->
+<!--    }-->
 
-    .search-input {
-        width: 100%;
-        padding: 14px 20px 14px 48px;
-        border: 2px solid var(--border);
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 500;
-        background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='9' cy='9' r='7'/%3E%3Cpath d='m14 14 4 4'/%3E%3C/svg%3E") no-repeat 16px center;
-        transition: all var(--transition);
-        color: var(--text);
-    }
+<!--    .search-input {-->
+<!--        width: 100%;-->
+<!--        padding: 14px 20px 14px 48px;-->
+<!--        border: 2px solid var(&#45;&#45;border);-->
+<!--        border-radius: 12px;-->
+<!--        font-size: 16px;-->
+<!--        font-weight: 500;-->
+<!--        background: var(&#45;&#45;card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='9' cy='9' r='7'/%3E%3Cpath d='m14 14 4 4'/%3E%3C/svg%3E") no-repeat 16px center;-->
+<!--        transition: all var(&#45;&#45;transition);-->
+<!--        color: var(&#45;&#45;text);-->
+<!--    }-->
 
-    .search-input::placeholder {
-        color: var(--text-muted);
-    }
+<!--    .search-input::placeholder {-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--    }-->
 
-    .search-input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1);
-    }
+<!--    .search-input:focus {-->
+<!--        outline: none;-->
+<!--        border-color: var(&#45;&#45;primary);-->
+<!--        box-shadow: 0 0 0 3px rgba(255, 0, 110, 0.1);-->
+<!--    }-->
 
-    /* ===== ТАБЛЕТКИ ФИЛЬТРА ===== */
-    .filter-tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 24px;
-        overflow-x: auto;
-        padding-bottom: 8px;
-        scrollbar-width: thin;
-    }
+<!--    /* ===== ТАБЛЕТКИ ФИЛЬТРА ===== */-->
+<!--    .filter-tabs {-->
+<!--        display: flex;-->
+<!--        gap: 10px;-->
+<!--        margin-bottom: 24px;-->
+<!--        overflow-x: auto;-->
+<!--        padding-bottom: 8px;-->
+<!--        scrollbar-width: thin;-->
+<!--    }-->
 
-    .filter-tab {
-        flex-shrink: 0;
-        padding: 8px 16px;
-        border: 1.5px solid var(--border);
-        background: var(--card);
-        border-radius: 999px;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 13px;
-        transition: all var(--transition);
-        color: var(--text-muted);
-    }
+<!--    .filter-tab {-->
+<!--        flex-shrink: 0;-->
+<!--        padding: 8px 16px;-->
+<!--        border: 1.5px solid var(&#45;&#45;border);-->
+<!--        background: var(&#45;&#45;card);-->
+<!--        border-radius: 999px;-->
+<!--        cursor: pointer;-->
+<!--        font-weight: 700;-->
+<!--        font-size: 13px;-->
+<!--        transition: all var(&#45;&#45;transition);-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--    }-->
 
-    .filter-tab:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
+<!--    .filter-tab:hover {-->
+<!--        border-color: var(&#45;&#45;primary);-->
+<!--        color: var(&#45;&#45;primary);-->
+<!--    }-->
 
-    .filter-tab.active {
-        background: var(--primary);
-        color: white;
-        border-color: var(--primary);
-    }
+<!--    .filter-tab.active {-->
+<!--        background: var(&#45;&#45;primary);-->
+<!--        color: white;-->
+<!--        border-color: var(&#45;&#45;primary);-->
+<!--    }-->
 
-    /* ===== СПИСОК ЧАТОВ ===== */
-    .threads-list {
-        display: grid;
-        gap: 12px;
-    }
+<!--    /* ===== СПИСОК ЧАТОВ ===== */-->
+<!--    .threads-list {-->
+<!--        display: grid;-->
+<!--        gap: 12px;-->
+<!--    }-->
 
-    .thread-card {
-        display: grid;
-        grid-template-columns: 56px 1fr auto;
-        gap: 16px;
-        padding: 16px;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        text-decoration: none;
-        color: inherit;
-        transition: all var(--transition);
-        align-items: center;
-    }
+<!--    .thread-card {-->
+<!--        display: grid;-->
+<!--        grid-template-columns: 56px 1fr auto;-->
+<!--        gap: 16px;-->
+<!--        padding: 16px;-->
+<!--        background: var(&#45;&#45;card);-->
+<!--        border: 1px solid var(&#45;&#45;border);-->
+<!--        border-radius: 12px;-->
+<!--        text-decoration: none;-->
+<!--        color: inherit;-->
+<!--        transition: all var(&#45;&#45;transition);-->
+<!--        align-items: center;-->
+<!--    }-->
 
-    .thread-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
+<!--    .thread-card:hover {-->
+<!--        border-color: var(&#45;&#45;primary);-->
+<!--        box-shadow: var(&#45;&#45;shadow-md);-->
+<!--        transform: translateY(-2px);-->
+<!--    }-->
 
-    .thread-card.unread {
-        background: rgba(255, 0, 110, 0.03);
-        border-color: rgba(255, 0, 110, 0.2);
-    }
+<!--    .thread-card.unread {-->
+<!--        background: rgba(255, 0, 110, 0.03);-->
+<!--        border-color: rgba(255, 0, 110, 0.2);-->
+<!--    }-->
 
-    /* Аватар */
-    .thread-avatar {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--primary) 0%, #ff1a7d 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 900;
-        font-size: 20px;
-        position: relative;
-        overflow: hidden;
-    }
+<!--    /* Аватар */-->
+<!--    .thread-avatar {-->
+<!--        width: 56px;-->
+<!--        height: 56px;-->
+<!--        border-radius: 12px;-->
+<!--        background: linear-gradient(135deg, var(&#45;&#45;primary) 0%, #ff1a7d 100%);-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: center;-->
+<!--        color: white;-->
+<!--        font-weight: 900;-->
+<!--        font-size: 20px;-->
+<!--        position: relative;-->
+<!--        overflow: hidden;-->
+<!--    }-->
 
-    .thread-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+<!--    .thread-avatar img {-->
+<!--        width: 100%;-->
+<!--        height: 100%;-->
+<!--        object-fit: cover;-->
+<!--    }-->
 
-    .thread-avatar::after {
-        content: '';
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: var(--success);
-        border-radius: 50%;
-        bottom: 0;
-        right: 0;
-        border: 2px solid var(--card);
-    }
+<!--    .thread-avatar::after {-->
+<!--        content: '';-->
+<!--        position: absolute;-->
+<!--        width: 12px;-->
+<!--        height: 12px;-->
+<!--        background: var(&#45;&#45;success);-->
+<!--        border-radius: 50%;-->
+<!--        bottom: 0;-->
+<!--        right: 0;-->
+<!--        border: 2px solid var(&#45;&#45;card);-->
+<!--    }-->
 
-    /* Контент */
-    .thread-content {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
+<!--    /* Контент */-->
+<!--    .thread-content {-->
+<!--        display: flex;-->
+<!--        flex-direction: column;-->
+<!--        gap: 6px;-->
+<!--    }-->
 
-    .thread-header {
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-    }
+<!--    .thread-header {-->
+<!--        display: flex;-->
+<!--        align-items: baseline;-->
+<!--        gap: 12px;-->
+<!--    }-->
 
-    .thread-user {
-        font-weight: 800;
-        color: var(--text);
-        font-size: 15px;
-    }
+<!--    .thread-user {-->
+<!--        font-weight: 800;-->
+<!--        color: var(&#45;&#45;text);-->
+<!--        font-size: 15px;-->
+<!--    }-->
 
-    .thread-ad {
-        font-size: 12px;
-        color: var(--text-muted);
-        font-weight: 600;
-        padding: 2px 8px;
-        background: rgba(100, 116, 139, 0.1);
-        border-radius: 6px;
-    }
+<!--    .thread-ad {-->
+<!--        font-size: 12px;-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--        font-weight: 600;-->
+<!--        padding: 2px 8px;-->
+<!--        background: rgba(100, 116, 139, 0.1);-->
+<!--        border-radius: 6px;-->
+<!--    }-->
 
-    .thread-message {
-        font-size: 14px;
-        color: var(--text-muted);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        line-height: 1.4;
-    }
+<!--    .thread-message {-->
+<!--        font-size: 14px;-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--        overflow: hidden;-->
+<!--        text-overflow: ellipsis;-->
+<!--        white-space: nowrap;-->
+<!--        line-height: 1.4;-->
+<!--    }-->
 
-    .thread-message.unread {
-        color: var(--text);
-        font-weight: 700;
-    }
+<!--    .thread-message.unread {-->
+<!--        color: var(&#45;&#45;text);-->
+<!--        font-weight: 700;-->
+<!--    }-->
 
-    /* Сайдбар */
-    .thread-meta {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 8px;
-        min-width: 80px;
-    }
+<!--    /* Сайдбар */-->
+<!--    .thread-meta {-->
+<!--        display: flex;-->
+<!--        flex-direction: column;-->
+<!--        align-items: flex-end;-->
+<!--        gap: 8px;-->
+<!--        min-width: 80px;-->
+<!--    }-->
 
-    .thread-time {
-        font-size: 13px;
-        color: var(--text-muted);
-        font-weight: 600;
-    }
+<!--    .thread-time {-->
+<!--        font-size: 13px;-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--        font-weight: 600;-->
+<!--    }-->
 
-    .thread-badge {
-        background: var(--primary);
-        color: white;
-        border-radius: 999px;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 11px;
-    }
+<!--    .thread-badge {-->
+<!--        background: var(&#45;&#45;primary);-->
+<!--        color: white;-->
+<!--        border-radius: 999px;-->
+<!--        width: 24px;-->
+<!--        height: 24px;-->
+<!--        display: flex;-->
+<!--        align-items: center;-->
+<!--        justify-content: center;-->
+<!--        font-weight: 800;-->
+<!--        font-size: 11px;-->
+<!--    }-->
 
-    /* ===== ПУСТО ===== */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-    }
+<!--    /* ===== ПУСТО ===== */-->
+<!--    .empty-state {-->
+<!--        text-align: center;-->
+<!--        padding: 60px 20px;-->
+<!--    }-->
 
-    .empty-state__icon {
-        font-size: 64px;
-        margin-bottom: 16px;
-    }
+<!--    .empty-state__icon {-->
+<!--        font-size: 64px;-->
+<!--        margin-bottom: 16px;-->
+<!--    }-->
 
-    .empty-state__title {
-        font-size: 24px;
-        font-weight: 800;
-        color: var(--text);
-        margin-bottom: 8px;
-    }
+<!--    .empty-state__title {-->
+<!--        font-size: 24px;-->
+<!--        font-weight: 800;-->
+<!--        color: var(&#45;&#45;text);-->
+<!--        margin-bottom: 8px;-->
+<!--    }-->
 
-    .empty-state__text {
-        color: var(--text-muted);
-        font-size: 16px;
-        margin-bottom: 24px;
-    }
+<!--    .empty-state__text {-->
+<!--        color: var(&#45;&#45;text-muted);-->
+<!--        font-size: 16px;-->
+<!--        margin-bottom: 24px;-->
+<!--    }-->
 
-    /* ===== МОБИЛЬ ===== */
-    @media (max-width: 640px) {
-        .chat-page {
-            padding: 16px 12px;
-        }
+<!--    /* ===== МОБИЛЬ ===== */-->
+<!--    @media (max-width: 640px) {-->
+<!--        .chat-page {-->
+<!--            padding: 16px 12px;-->
+<!--        }-->
 
-        .chat-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-        }
+<!--        .chat-header {-->
+<!--            flex-direction: column;-->
+<!--            align-items: flex-start;-->
+<!--            gap: 16px;-->
+<!--        }-->
 
-        .chat-header__title {
-            font-size: 24px;
-        }
+<!--        .chat-header__title {-->
+<!--            font-size: 24px;-->
+<!--        }-->
 
-        .thread-card {
-            grid-template-columns: 48px 1fr auto;
-            gap: 12px;
-            padding: 12px;
-        }
+<!--        .thread-card {-->
+<!--            grid-template-columns: 48px 1fr auto;-->
+<!--            gap: 12px;-->
+<!--            padding: 12px;-->
+<!--        }-->
 
-        .thread-avatar {
-            width: 48px;
-            height: 48px;
-        }
-    }
-</style>
+<!--        .thread-avatar {-->
+<!--            width: 48px;-->
+<!--            height: 48px;-->
+<!--        }-->
+<!--    }-->
+<!--</style>-->
 
-<div class="chat-page">
-    <!-- Хедер -->
-    <header class="chat-header">
-        <h1 class="chat-header__title">💬 Ваши чаты</h1>
-        <div class="chat-header__actions">
-            <a href="{% url 'ad_list' %}" class="btn btn--secondary">
-                ← Вернуться
-            </a>
-        </div>
-    </header>
+<!--<div class="chat-page">-->
+<!--    &lt;!&ndash; Хедер &ndash;&gt;-->
+<!--    <header class="chat-header">-->
+<!--        <h1 class="chat-header__title">💬 Ваши чаты</h1>-->
+<!--        <div class="chat-header__actions">-->
+<!--            <a href="{% url 'ad_list' %}" class="btn btn&#45;&#45;secondary">-->
+<!--                ← Вернуться-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    </header>-->
 
-    <!-- Поиск -->
-    <div class="search-box">
-        <input 
-            type="text" 
-            class="search-input" 
-            id="searchInput"
-            placeholder="Поиск чата или объявления..."
-        >
-    </div>
+<!--    &lt;!&ndash; Поиск &ndash;&gt;-->
+<!--    <div class="search-box">-->
+<!--        <input -->
+<!--            type="text" -->
+<!--            class="search-input" -->
+<!--            id="searchInput"-->
+<!--            placeholder="Поиск чата или объявления..."-->
+<!--        >-->
+<!--    </div>-->
 
-    <!-- Фильтр -->
-    <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="all">
-            Все чаты ({{ threads.count }})
-        </button>
-        <button class="filter-tab" data-filter="unread">
-            Непрочитанные
-        </button>
-        <button class="filter-tab" data-filter="recent">
-            Недавние
-        </button>
-    </div>
+<!--    &lt;!&ndash; Фильтр &ndash;&gt;-->
+<!--    <div class="filter-tabs">-->
+<!--        <button class="filter-tab active" data-filter="all">-->
+<!--            Все чаты ({{ threads.count }})-->
+<!--        </button>-->
+<!--        <button class="filter-tab" data-filter="unread">-->
+<!--            Непрочитанные-->
+<!--        </button>-->
+<!--        <button class="filter-tab" data-filter="recent">-->
+<!--            Недавние-->
+<!--        </button>-->
+<!--    </div>-->
 
-    <!-- Список чатов -->
-    {% if threads %}
-        <div class="threads-list" id="threadsList">
-            {% for thread in threads %}
-                <a href="{% url 'chat_detail' thread.pk %}" class="thread-card {% if thread.has_unread %}unread{% endif %}" data-thread-id="{{ thread.pk }}">
-                    <!-- Аватар -->
-                    <div class="thread-avatar">
-                        {% with other_user=thread.participants.exclude|first %}
-                            {{ other_user.username|slice:":1"|upper }}
-                        {% endwith %}
-                    </div>
+<!--    &lt;!&ndash; Список чатов &ndash;&gt;-->
+<!--    {% if threads %}-->
+<!--        <div class="threads-list" id="threadsList">-->
+<!--            {% for thread in threads %}-->
+<!--                <a href="{% url 'chat_detail' thread.pk %}" class="thread-card {% if thread.has_unread %}unread{% endif %}" data-thread-id="{{ thread.pk }}">-->
+<!--                    &lt;!&ndash; Аватар &ndash;&gt;-->
+<!--                    <div class="thread-avatar">-->
+<!--                        {% with other_user=thread.participants.exclude|first %}-->
+<!--                            {{ other_user.username|slice:":1"|upper }}-->
+<!--                        {% endwith %}-->
+<!--                    </div>-->
 
-                    <!-- Контент -->
-                    <div class="thread-content">
-                        <div class="thread-header">
-                            <span class="thread-user">
-                                {% with other_user=thread.participants.exclude|first %}
-                                    {{ other_user.get_full_name|default:other_user.username }}
-                                {% endwith %}
-                            </span>
-                            <span class="thread-ad">{{ thread.ad.title|truncatewords:3 }}</span>
-                        </div>
-                        <div class="thread-message {% if thread.has_unread %}unread{% endif %}">
-                            {% with last_msg=thread.messages.last %}
-                                {% if last_msg %}
-                                    {{ last_msg.text|truncatewords:8 }}
-                                {% else %}
-                                    Начните разговор...
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                    </div>
+<!--                    &lt;!&ndash; Контент &ndash;&gt;-->
+<!--                    <div class="thread-content">-->
+<!--                        <div class="thread-header">-->
+<!--                            <span class="thread-user">-->
+<!--                                {% with other_user=thread.participants.exclude|first %}-->
+<!--                                    {{ other_user.get_full_name|default:other_user.username }}-->
+<!--                                {% endwith %}-->
+<!--                            </span>-->
+<!--                            <span class="thread-ad">{{ thread.ad.title|truncatewords:3 }}</span>-->
+<!--                        </div>-->
+<!--                        <div class="thread-message {% if thread.has_unread %}unread{% endif %}">-->
+<!--                            {% with last_msg=thread.messages.last %}-->
+<!--                                {% if last_msg %}-->
+<!--                                    {{ last_msg.text|truncatewords:8 }}-->
+<!--                                {% else %}-->
+<!--                                    Начните разговор...-->
+<!--                                {% endif %}-->
+<!--                            {% endwith %}-->
+<!--                        </div>-->
+<!--                    </div>-->
 
-                    <!-- Мета -->
-                    <div class="thread-meta">
-                        <span class="thread-time">
-                            {% with last_msg=thread.messages.last %}
-                                {% if last_msg %}
-                                    {{ last_msg.created_at|date:"H:i" }}
-                                {% endif %}
-                            {% endwith %}
-                        </span>
-                        {% if thread.has_unread %}
-                            <span class="thread-badge">
-                                {{ thread.unread_count }}
-                            </span>
-                        {% endif %}
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="empty-state">
-            <div class="empty-state__icon">💭</div>
-            <h2 class="empty-state__title">Чатов пока нет</h2>
-            <p class="empty-state__text">Когда вы начнёте общаться с другими пользователями, диалоги появятся здесь</p>
-            <a href="{% url 'ad_list' %}" class="btn btn--primary">
-                Найти объявления
-            </a>
-        </div>
-    {% endif %}
-</div>
+<!--                    &lt;!&ndash; Мета &ndash;&gt;-->
+<!--                    <div class="thread-meta">-->
+<!--                        <span class="thread-time">-->
+<!--                            {% with last_msg=thread.messages.last %}-->
+<!--                                {% if last_msg %}-->
+<!--                                    {{ last_msg.created_at|date:"H:i" }}-->
+<!--                                {% endif %}-->
+<!--                            {% endwith %}-->
+<!--                        </span>-->
+<!--                        {% if thread.has_unread %}-->
+<!--                            <span class="thread-badge">-->
+<!--                                {{ thread.unread_count }}-->
+<!--                            </span>-->
+<!--                        {% endif %}-->
+<!--                    </div>-->
+<!--                </a>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--    {% else %}-->
+<!--        <div class="empty-state">-->
+<!--            <div class="empty-state__icon">💭</div>-->
+<!--            <h2 class="empty-state__title">Чатов пока нет</h2>-->
+<!--            <p class="empty-state__text">Когда вы начнёте общаться с другими пользователями, диалоги появятся здесь</p>-->
+<!--            <a href="{% url 'ad_list' %}" class="btn btn&#45;&#45;primary">-->
+<!--                Найти объявления-->
+<!--            </a>-->
+<!--        </div>-->
+<!--    {% endif %}-->
+<!--</div>-->
 
-<script>
-    // Поиск
-    const searchInput = document.getElementById('searchInput');
-    const threadsList = document.getElementById('threadsList');
+<!--<script>-->
+<!--    // Поиск-->
+<!--    const searchInput = document.getElementById('searchInput');-->
+<!--    const threadsList = document.getElementById('threadsList');-->
 
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            const threads = threadsList.querySelectorAll('.thread-card');
+<!--    if (searchInput) {-->
+<!--        searchInput.addEventListener('input', function(e) {-->
+<!--            const query = e.target.value.toLowerCase();-->
+<!--            const threads = threadsList.querySelectorAll('.thread-card');-->
 
-            threads.forEach(thread => {
-                const text = thread.textContent.toLowerCase();
-                thread.style.display = text.includes(query) ? 'grid' : 'none';
-            });
-        });
-    }
+<!--            threads.forEach(thread => {-->
+<!--                const text = thread.textContent.toLowerCase();-->
+<!--                thread.style.display = text.includes(query) ? 'grid' : 'none';-->
+<!--            });-->
+<!--        });-->
+<!--    }-->
 
-    // Фильтры
-    document.querySelectorAll('.filter-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>
+<!--    // Фильтры-->
+<!--    document.querySelectorAll('.filter-tab').forEach(tab => {-->
+<!--        tab.addEventListener('click', function() {-->
+<!--            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));-->
+<!--            this.classList.add('active');-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
 
-{% endblock %}
+<!--{% endblock %}-->

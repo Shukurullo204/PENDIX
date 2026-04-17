@@ -1,371 +1,875 @@
-{% load static %}
 <!DOCTYPE html>
+
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PENDIX — Твоя территория покупок{% endblock %}</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<meta charset="UTF-8">
 
-    <style>
-        :root {
-            --hot-pink: #ff006e;
-            --deep-pink: #880044;
-            --soft-pink: #fff0f6;
-            --white: #ffffff;
-            --dark: #002f34;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background-color: var(--soft-pink); color: #333; min-height: 100vh; display: flex; flex-direction: column; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+<title>{% block title %}PENDIX — Твоя территория покупок{% endblock %}</title>
 
-        /* ===== ШАПКА (БОЛЬШАЯ И ЖИРНАЯ) ===== */
-        .top-header {
-            background: linear-gradient(135deg, var(--deep-pink) 0%, #a01555 100%);
-            color: #ffffff;
-            padding: 24px 0;
-            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 1000;
-        }
 
-        .top-header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
 
-        .logo-top {
-            font-size: 52px;
-            font-weight: 900;
-            color: #fff;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: -1.5px;
-            line-height: 1;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        .logo-top span {
-            color: var(--hot-pink);
-        }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
 
-        /* Стили для ссылок в шапке (Чат, Избранное, Уведомления) */
-        .header-actions a.action-link {
-            background-color: rgba(255, 255, 255, 0.18);
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 800;
-            padding: 12px 20px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            border: 1.5px solid rgba(255, 255, 255, 0.28);
-            backdrop-filter: blur(10px);
-            letter-spacing: 0.3px;
-        }
 
-        .header-actions a.action-link:hover {
-            background-color: rgba(255, 255, 255, 0.28);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
+<style>
 
-        .profile-link-btn {
-            background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%) !important;
-            color: #fff !important;
-            border-color: transparent !important;
-        }
+:root {
 
-        .profile-link-btn:hover {
-            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4) !important;
-        }
+--hot-pink: #ff006e;
 
-        .post-ad-btn {
-            background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%);
-            color: #fff !important;
-            padding: 13px 28px;
-            border-radius: 50px;
-            font-weight: 800;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 15px;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: none;
-        }
+--deep-pink: #880044;
 
-        .post-ad-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
-        }
+--soft-pink: #fff0f6;
 
-        /* ===== ПОИСК ===== */
-        .nav-section {
-            background-color: var(--white);
-            padding: 18px 0;
-            border-bottom: 3px solid var(--hot-pink);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+--white: #ffffff;
 
-        .search-row {
-            display: flex;
-            align-items: center;
-            gap: 35px;
-        }
+--dark: #002f34;
 
-        .logo-bottom {
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--hot-pink);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
+}
 
-        .search-form {
-            flex-grow: 1;
-            position: relative;
-        }
 
-        .search-form input {
-            width: 100%;
-            padding: 14px 18px 14px 50px;
-            border: 2px solid #e0e0e0;
-            border-radius: 50px;
-            outline: none;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 500;
-            background-color: #f8f9fa;
-        }
 
-        .search-form input::placeholder {
-            color: #999;
-            font-weight: 500;
-        }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
 
-        .search-form input:focus {
-            border-color: var(--hot-pink);
-            background-color: #fff;
-            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.15);
-        }
+body { background-color: var(--soft-pink); color: #333; min-height: 100vh; display: flex; flex-direction: column; }
 
-        .search-form::before {
-            content: "🔍";
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0.6;
-            font-size: 18px;
-        }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
 
-        /* КОНТЕНТ */
-        main { flex: 1; padding: 30px 0; }
 
-        /* Профессиональный футер */
-        .pro-footer {
-            background-color: #ffffff;
-            border-top: 1px solid #ebedee;
-            padding: 60px 0 30px 0;
-            margin-top: auto;
-            color: #002f34;
-        }
 
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
+/* ===== ШАПКА (БОЛЬШАЯ И ЖИРНАЯ) ===== */
 
-        .footer-col h4 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
+.top-header {
 
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 12px; }
+background: linear-gradient(135deg, var(--deep-pink) 0%, #a01555 100%);
 
-        .footer-col ul li a {
-            text-decoration: none;
-            color: #406367;
-            font-size: 14px;
-            transition: 0.2s;
-        }
+color: #ffffff;
 
-        .footer-col ul li a:hover { color: var(--hot-pink); }
+padding: 24px 0;
 
-        .f-logo {
-            font-size: 28px;
-            font-weight: 900;
-            color: var(--deep-pink);
-            display: block;
-            margin-bottom: 15px;
-        }
-        .f-logo span { color: var(--hot-pink); }
+box-shadow: 0 6px 25px rgba(0,0,0,0.15);
 
-        .f-about {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #7f9799;
-            margin-bottom: 20px;
-        }
+position: relative;
 
-        .social-icons { display: flex; gap: 15px; font-size: 20px; cursor: pointer; }
+z-index: 1000;
 
-        .footer-bottom {
-            border-top: 1px solid #ebedee;
-            padding-top: 25px;
-            text-align: center;
-        }
+}
 
-        .footer-bottom p {
-            font-size: 12px;
-            color: #7f9799;
-        }
 
-        @media (max-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr 1fr; }
 
-            .logo-top {
-                font-size: 40px;
-            }
+.top-header .container {
 
-            .top-header {
-                padding: 18px 0;
-            }
+display: flex;
 
-            .header-actions {
-                gap: 10px;
-            }
+justify-content: space-between;
 
-            .header-actions a.action-link {
-                font-size: 13px;
-                padding: 10px 16px;
-            }
+align-items: center;
 
-            .post-ad-btn {
-                padding: 10px 20px;
-                font-size: 13px;
-            }
-        }
+}
 
-        {% block extra_css %}{% endblock %}
-    </style>
+
+
+.logo-top {
+
+font-size: 52px;
+
+font-weight: 900;
+
+color: #fff;
+
+text-decoration: none;
+
+text-transform: uppercase;
+
+letter-spacing: -1.5px;
+
+line-height: 1;
+
+}
+
+
+
+.logo-top span {
+
+color: var(--hot-pink);
+
+}
+
+
+
+.header-actions {
+
+display: flex;
+
+align-items: center;
+
+gap: 14px;
+
+}
+
+
+
+/* Стили для ссылок в шапке (Чат, Избранное, Уведомления) */
+
+.header-actions a.action-link {
+
+background-color: rgba(255, 255, 255, 0.18);
+
+color: #ffffff;
+
+text-decoration: none;
+
+font-size: 15px;
+
+font-weight: 800;
+
+padding: 12px 20px;
+
+border-radius: 50px;
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+transition: all 0.3s ease;
+
+border: 1.5px solid rgba(255, 255, 255, 0.28);
+
+backdrop-filter: blur(10px);
+
+letter-spacing: 0.3px;
+
+}
+
+
+
+.header-actions a.action-link:hover {
+
+background-color: rgba(255, 255, 255, 0.28);
+
+border-color: rgba(255, 255, 255, 0.5);
+
+transform: translateY(-2px);
+
+box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+}
+
+
+
+.profile-link-btn {
+
+background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%) !important;
+
+color: #fff !important;
+
+border-color: transparent !important;
+
+}
+
+
+
+.profile-link-btn:hover {
+
+box-shadow: 0 6px 20px rgba(255, 0, 110, 0.4) !important;
+
+}
+
+
+
+.post-ad-btn {
+
+background: linear-gradient(135deg, var(--hot-pink) 0%, #ff1a7d 100%);
+
+color: #fff !important;
+
+padding: 13px 28px;
+
+border-radius: 50px;
+
+font-weight: 800;
+
+text-decoration: none;
+
+transition: all 0.3s ease;
+
+font-size: 15px;
+
+letter-spacing: 0.3px;
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+border: none;
+
+}
+
+
+
+.post-ad-btn:hover {
+
+transform: translateY(-3px);
+
+box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
+
+}
+
+
+
+/* ===== ПОИСК ===== */
+
+.nav-section {
+
+background-color: var(--white);
+
+padding: 18px 0;
+
+border-bottom: 3px solid var(--hot-pink);
+
+box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+}
+
+
+
+.search-row {
+
+display: flex;
+
+align-items: center;
+
+gap: 35px;
+
+}
+
+
+
+.logo-bottom {
+
+font-size: 32px;
+
+font-weight: 900;
+
+color: var(--hot-pink);
+
+text-decoration: none;
+
+letter-spacing: -0.5px;
+
+}
+
+
+
+.search-form {
+
+flex-grow: 1;
+
+position: relative;
+
+}
+
+
+
+.search-form input {
+
+width: 100%;
+
+padding: 14px 18px 14px 50px;
+
+border: 2px solid #e0e0e0;
+
+border-radius: 50px;
+
+outline: none;
+
+transition: all 0.3s ease;
+
+font-size: 16px;
+
+font-weight: 500;
+
+background-color: #f8f9fa;
+
+}
+
+
+
+.search-form input::placeholder {
+
+color: #999;
+
+font-weight: 500;
+
+}
+
+
+
+.search-form input:focus {
+
+border-color: var(--hot-pink);
+
+background-color: #fff;
+
+box-shadow: 0 4px 15px rgba(255, 0, 110, 0.15);
+
+}
+
+
+
+.search-form::before {
+
+content: "🔍";
+
+position: absolute;
+
+left: 18px;
+
+top: 50%;
+
+transform: translateY(-50%);
+
+opacity: 0.6;
+
+font-size: 18px;
+
+}
+
+
+
+/* КОНТЕНТ */
+
+main { flex: 1; padding: 30px 0; }
+
+
+
+/* Профессиональный футер */
+
+.pro-footer {
+
+background-color: #ffffff;
+
+border-top: 1px solid #ebedee;
+
+padding: 60px 0 30px 0;
+
+margin-top: auto;
+
+color: #002f34;
+
+}
+
+
+
+.footer-grid {
+
+display: grid;
+
+grid-template-columns: 1.5fr 1fr 1fr 1fr;
+
+gap: 40px;
+
+margin-bottom: 40px;
+
+}
+
+
+
+.footer-col h4 {
+
+font-size: 16px;
+
+font-weight: 700;
+
+margin-bottom: 20px;
+
+text-transform: uppercase;
+
+}
+
+
+
+.footer-col ul { list-style: none; }
+
+.footer-col ul li { margin-bottom: 12px; }
+
+
+
+.footer-col ul li a {
+
+text-decoration: none;
+
+color: #406367;
+
+font-size: 14px;
+
+transition: 0.2s;
+
+}
+
+
+
+.footer-col ul li a:hover { color: var(--hot-pink); }
+
+
+
+.f-logo {
+
+font-size: 28px;
+
+font-weight: 900;
+
+color: var(--deep-pink);
+
+display: block;
+
+margin-bottom: 15px;
+
+}
+
+.f-logo span { color: var(--hot-pink); }
+
+
+
+.f-about {
+
+font-size: 14px;
+
+line-height: 1.6;
+
+color: #7f9799;
+
+margin-bottom: 20px;
+
+}
+
+
+
+.social-icons { display: flex; gap: 15px; font-size: 20px; cursor: pointer; }
+
+
+
+.footer-bottom {
+
+border-top: 1px solid #ebedee;
+
+padding-top: 25px;
+
+text-align: center;
+
+}
+
+
+
+.footer-bottom p {
+
+font-size: 12px;
+
+color: #7f9799;
+
+}
+
+
+
+@media (max-width: 768px) {
+
+.footer-grid { grid-template-columns: 1fr 1fr; }
+
+
+
+.logo-top {
+
+font-size: 40px;
+
+}
+
+
+
+.top-header {
+
+padding: 18px 0;
+
+}
+
+
+
+.header-actions {
+
+gap: 10px;
+
+}
+
+
+
+.header-actions a.action-link {
+
+font-size: 13px;
+
+padding: 10px 16px;
+
+}
+
+
+
+.post-ad-btn {
+
+padding: 10px 20px;
+
+font-size: 13px;
+
+}
+
+}
+
+
+
+{% block extra_css %}{% endblock %}
+
+</style>
+
 </head>
+
 <body>
 
+
+
 <header class="top-header">
-    <div class="container">
-        <a href="{% url 'ad_list' %}" class="logo-top">PEN<span>DIX</span></a>
-        <div class="header-actions">
-            <a href="{% url 'chat_list' %}" class="action-link">💬 <span>Чат</span></a>
-            <a href="#" class="action-link">❤️ <span>Избранное</span></a>
-            <a href="#" class="action-link">🔔 <span>Уведомления</span></a>
 
-            {% if user.is_authenticated %}
-            <a href="{% url 'profile_detail' user.id %}" class="action-link profile-link-btn">
-                ⚙️ Профиль
-            </a>
-            {% else %}
-            <a href="javascript:void(0)" onclick="openAuth()" class="action-link login-btn">Войти</a>
-            {% endif %}
-
-            {% include 'includes/post_ad_btn.html' %}
-        </div>
-    </div>
-</header>
-
-<nav class="nav-section">
-    <div class="container">
-        <div class="search-row">
-            <a href="{% url 'ad_list' %}" class="logo-bottom">◎ pendix</a>
-            <form action="{% url 'ad_list' %}" method="get" class="search-form">
-                <input type="text" name="q" placeholder="Что ищете сегодня?" value="{{ request.GET.q }}">
-            </form>
-        </div>
-    </div>
-</nav>
-
-{% if request.path == '/' %}
 <div class="container">
-    <div class="banner-box" style="width: 100%; height: 200px; border-radius: 20px; margin: 20px 0; background: linear-gradient(135deg, var(--deep-pink) 0%, var(--hot-pink) 100%); display: flex; flex-direction: column; justify-content: center; padding: 40px; color: #fff;">
-        <h2>Найди то, что влюбишься</h2>
-        <p>Более 500 000 свежих объявлений в Узбекистане</p>
-    </div>
-</div>
+
+<a href="{% url 'ad_list' %}" class="logo-top">PEN<span>DIX</span></a>
+
+<div class="header-actions">
+
+<a href="{% url 'chat_list' %}" class="action-link">💬 <span>Чат</span></a>
+
+<a href="#" class="action-link">❤️ <span>Избранное</span></a>
+
+<a href="#" class="action-link">🔔 <span>Уведомления</span></a>
+
+
+
+{% if user.is_authenticated %}
+
+<a href="{% url 'profile_detail' user.id %}" class="action-link profile-link-btn">
+
+⚙️ Профиль
+
+</a>
+
+{% else %}
+
+<a href="javascript:void(0)" onclick="openAuth()" class="action-link login-btn">Войти</a>
+
 {% endif %}
 
-<main class="container">
-    {% block content %}{% endblock %}
-</main>
 
-<footer class="pro-footer">
-    <div class="container">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <span class="f-logo">PEN<span>DIX</span></span>
-                <p class="f-about">Крупнейший сервис объявлений в Узбекистане. Покупайте и продавайте товары из рук в руки быстро и удобно.</p>
-                <div class="social-icons">
-                    <span>📱</span> <span>📸</span> <span>✈️</span>
+
+{% include 'includes/post_ad_btn.html' %}
+
+</div>
+
+</div>
+
+</header>
+
+
+
+<nav class="nav-section">
+
+<div class="container">
+
+<div class="search-row">
+
+<a href="{% url 'ad_list' %}" class="logo-bottom">◎ pendix</a>
+
+<form action="{% url 'ad_list' %}" method="get" class="search-form">
+
+<input type="text" name="q" placeholder="Что ищете сегодня?" value="{{ request.GET.q }}">
+
+</form>
+
+</div>
+
+</div>
+
+</nav>
+
+
+
+{% if request.path == '/' %}
+
+<div class="container">
+
+<div class="banner-box" style="width: 100%; height: 200px; border-radius: 20px; margin: 20px 0; background: linear-gradient(135deg, var(--deep-pink) 0%, var(--hot-pink) 100%); display: flex; flex-direction: column; justify-content: center; padding: 40px; color: #fff;">
+
+<h2>Найди то, что влюбишься</h2>
+
+<p>Более 500 000 свежих объявлений в Узбекистане</p>
+
+</div>
+
+</div>
+
+{% endif %}
+
+
+
+<main class="container">
+
+{% block content %}{% endblock %}
+
+</main>
+<div class="modal-overlay" id="authOverlay" onclick="closeAuthOutside(event)">
+    <div class="auth-modal" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="closeAuth()">&times;</span>
+
+        <div style="display: flex; width: 100%; height: 100%;">
+            <div class="auth-left" style="flex: 1;">
+                <h1 class="auth-main-title">Личный кабинет</h1>
+                <p class="auth-subtitle">Войдите, чтобы пользоваться всеми функциями Pendix</p>
+
+                <form action="{% url 'smart_auth' %}" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="username" class="auth-input-custom" placeholder="Логин" required>
+                    <input type="password" name="password" class="auth-input-custom" placeholder="Пароль" required>
+                    <button type="submit" class="btn-auth-continue">Войти</button>
+                </form>
+
+                <div class="social-auth-row">
+                    <div class="soc-btn-new">Google</div>
+                    <div class="soc-btn-new">Facebook</div>
                 </div>
             </div>
 
-            <div class="footer-col">
-                <h4>Разделы</h4>
-                <ul>
-                    <li><a href="{% url 'ad_list' %}">Все объявления</a></li>
-                    <li><a href="#">Популярные категории</a></li>
-                    <li><a href="{% url 'ad_create' %}">Подать объявление</a></li>
-                    <li><a href="#">Магазины</a></li>
-                </ul>
+            <div class="auth-right" style="flex: 1;">
+                <h3 class="perks-title">Возможности</h3>
+                <div class="perk-row-new">
+                    <div class="perk-icon-bg">📢</div>
+                    <div class="perk-text-box">
+                        <h6>Легкие продажи</h6>
+                        <p>Создавайте объявления за пару минут</p>
+                    </div>
+                </div>
+                <div class="perk-row-new">
+                    <div class="perk-icon-bg">💬</div>
+                    <div class="perk-text-box">
+                        <h6>Безопасное общение</h6>
+                        <p>Договаривайтесь в чате прямо на сайте</p>
+                    </div>
+                </div>
+                <div class="perk-row-new">
+                    <div class="perk-icon-bg">📂</div>
+                    <div class="perk-text-box">
+                        <h6>Личный профиль</h6>
+                        <p>Управляйте своими товарами и избранным</p>
+                    </div>
+                </div>
             </div>
-
-            <div class="footer-col">
-                <h4>Информация</h4>
-                <ul>
-                    <li><a href="#">Помощь и обратная связь</a></li>
-                    <li><a href="#">Платные услуги</a></li>
-                    <li><a href="#">Бизнес на Pendix</a></li>
-                    <li><a href="#">Условия использования</a></li>
-                </ul>
-            </div>
-
-            <div class="footer-col">
-                <h4>Оферта и Правила</h4>
-                <ul>
-                    <li><a href="#">Публичная оферта</a></li>
-                    <li><a href="#">Политика конфиденциальности</a></li>
-                    <li><a href="#">Правила безопасности</a></li>
-                    <li><a href="#">Карта сайта</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>© 2026 Pendix. Все права защищены. Использование сайта означает согласие с пользовательским соглашением.</p>
         </div>
     </div>
+</div>
+
+
+<footer class="pro-footer">
+
+<div class="container">
+
+<div class="footer-grid">
+
+<div class="footer-col">
+
+<span class="f-logo">PEN<span>DIX</span></span>
+
+<p class="f-about">Крупнейший сервис объявлений в Узбекистане. Покупайте и продавайте товары из рук в руки быстро и удобно.</p>
+
+<div class="social-icons">
+
+<span>📱</span> <span>📸</span> <span>✈️</span>
+
+</div>
+
+</div>
+
+
+
+<div class="footer-col">
+
+<h4>Разделы</h4>
+
+<ul>
+
+<li><a href="{% url 'ad_list' %}">Все объявления</a></li>
+
+<li><a href="#">Популярные категории</a></li>
+
+<li><a href="{% url 'ad_create' %}">Подать объявление</a></li>
+
+<li><a href="#">Магазины</a></li>
+
+</ul>
+
+</div>
+
+
+
+<div class="footer-col">
+
+<h4>Информация</h4>
+
+<ul>
+
+<li><a href="#">Помощь и обратная связь</a></li>
+
+<li><a href="#">Платные услуги</a></li>
+
+<li><a href="#">Бизнес на Pendix</a></li>
+
+<li><a href="#">Условия использования</a></li>
+
+</ul>
+
+</div>
+
+
+
+<div class="footer-col">
+
+<h4>Оферта и Правила</h4>
+
+<ul>
+
+<li><a href="#">Публичная оферта</a></li>
+
+<li><a href="#">Политика конфиденциальности</a></li>
+
+<li><a href="#">Правила безопасности</a></li>
+
+<li><a href="#">Карта сайта</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+
+<div class="footer-bottom">
+
+<p>© 2026 Pendix. Все права защищены. Использование сайта означает согласие с пользовательским соглашением.</p>
+
+</div>
+
+</div>
+
 </footer>
 
+<style>
+    /* Основные переменные */
+    :root {
+        --olx-dark: #002f34;
+        --hot-pink: #ff006e;
+        --light-pink-bg: #fff0f5;
+        --grey-text: #7f9799;
+    }
+
+    /* Модалка и Оверлей */
+    .modal-overlay {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active { display: flex; opacity: 1; }
+
+    .auth-modal {
+        background: #fff; width: 900px; height: 500px; border-radius: 30px;
+        overflow: hidden; position: relative; display: flex;
+        transform: scale(0.9); transition: 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    }
+    .modal-overlay.active .auth-modal { transform: scale(1); }
+
+    .close-modal {
+        position: absolute; top: 25px; right: 30px; cursor: pointer;
+        font-size: 35px; color: #ced4da; transition: 0.2s; z-index: 10;
+    }
+    .close-modal:hover { color: var(--hot-pink); }
+
+    /* Левая колонка */
+    .auth-left { padding: 60px; display: flex; flex-direction: column; justify-content: center; }
+    .auth-main-title { font-size: 32px; font-weight: 800; color: var(--olx-dark); margin-bottom: 8px; }
+    .auth-subtitle { font-size: 15px; color: var(--grey-text); margin-bottom: 25px; }
+
+    .auth-input-custom {
+        width: 100%; padding: 16px 20px; margin-bottom: 12px;
+        border: 1.5px solid #f2f4f5; border-radius: 14px; background: #fcfcfc;
+        outline: none; transition: 0.3s; font-size: 16px;
+    }
+    .auth-input-custom:focus { border-color: var(--hot-pink); background: #fff; }
+
+    .btn-auth-continue {
+        width: 100%; background: var(--hot-pink); color: #fff; border: none;
+        padding: 18px; border-radius: 14px; font-weight: 700; font-size: 16px;
+        margin-top: 10px; transition: 0.3s;
+    }
+    .btn-auth-continue:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 0, 110, 0.2); }
+
+    .social-auth-row { display: flex; gap: 15px; margin-top: 25px; }
+    .soc-btn-new {
+        flex: 1; padding: 14px; border: 1.5px solid #f2f4f5; border-radius: 12px;
+        text-align: center; color: #adb5bd; font-weight: 600; font-size: 15px; cursor: not-allowed;
+    }
+
+    /* Правая колонка */
+    .auth-right {
+        background-color: var(--light-pink-bg); padding: 60px;
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .perks-title { font-size: 20px; font-weight: 800; color: var(--olx-dark); margin-bottom: 35px; }
+
+    .perk-row-new { display: flex; gap: 20px; margin-bottom: 30px; align-items: center; }
+    .perk-icon-bg {
+        width: 48px; height: 48px; background: #fff; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex-shrink: 0;
+    }
+    .perk-text-box h6 { margin: 0 0 3px 0; font-weight: 700; color: #1a1a1a; font-size: 16px; }
+    .perk-text-box p { margin: 0; font-size: 13px; color: var(--grey-text); }
+</style>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Открыть окно
+    function openAuth() {
+        document.getElementById('authOverlay').classList.add('active');
+    }
+
+    // Закрыть окно
+    function closeAuth() {
+        document.getElementById('authOverlay').classList.remove('active');
+    }
+
+    // Закрыть окно, если кликнули на темный фон вокруг него
+    function closeAuthOutside(event) {
+        if (event.target.id === 'authOverlay') {
+            closeAuth();
+        }
+    }
+</script>
 {% block extra_js %}{% endblock %}
+
 </body>
+
 </html>

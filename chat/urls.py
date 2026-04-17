@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import ThreadListView, ChatDetailView, CreateOrGetChatView
+from . import views
 
 urlpatterns = [
-    path('chat/', ThreadListView.as_view(), name='chat_list'),
-    path('chat/<int:pk>/', ChatDetailView.as_view(), name='chat_detail'),
-    path('chat/start/<int:seller_id>/<int:ad_id>/', CreateOrGetChatView.as_view(), name='create_or_get_chat'),
+    path('', views.chat_view, name='chat_list'),
+    # Добавляем этот путь, чтобы ссылка /chat/5/ тоже работала
+    path('<int:thread_id>/', views.chat_view, name='chat_detail'),
+    path('start/<int:seller_id>/<int:ad_id>/', views.CreateOrGetChatView.as_view(), name='create_or_get_chat'),
+
 ]
