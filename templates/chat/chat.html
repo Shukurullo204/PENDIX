@@ -98,45 +98,48 @@
             body.chat-open .main-workspace { display: flex; }
             .back-btn { display: block; } /* Показываем кнопку "назад" */
         }
+
     </style>
 </head>
 <body>
 
-    <nav class="sidebar-mini">
-        <div class="nav-icon active">💬</div>
-        <div class="nav-icon">👤</div>
-        <div class="nav-icon">⚙️</div>
-    </nav>
+<nav class="sidebar-mini">
+    <div class="nav-icon active">💬</div>
+    <div class="nav-icon">👤</div>
+    <div class="nav-icon">⚙️</div>
+</nav>
 
-    <aside class="chats-list-panel">
-        <div class="chats-header">
-            <div class="search-box"><span>🔍</span><input type="text" placeholder="Поиск..."></div>
-        </div>
-        <div class="threads" id="threadsList">
-    {% for row in threads %}
-    <a href="{% url 'chat_detail' row.thread.id %}"
-       class="chat-item {% if active_thread.id == row.thread.id %}active{% endif %}"
-       style="text-decoration: none; color: inherit;">
-        <div class="avatar">
-            {{ row.other_user.username|slice:":1"|upper }}
-            {% if row.other_user.is_online %}<div class="online-dot"></div>{% endif %}
-        </div>
-        <div class="chat-info">
-            <div class="chat-top">
-                <span class="chat-name">{{ row.other_user.username }}</span>
-                <span class="chat-time">{{ row.last_message.created_at|date:"H:i" }}</span>
+<aside class="chats-list-panel">
+    <div class="chats-header">
+        <div class="search-box"><span>🔍</span><input type="text" placeholder="Поиск..."></div>
+    </div>
+    <div class="threads" id="threadsList">
+        {% for row in threads %}
+        <a href="{% url 'chat_detail' row.thread.id %}"
+           class="chat-item {% if active_thread.id == row.thread.id %}active{% endif %}"
+           style="text-decoration: none; color: inherit;">
+            <div class="avatar">
+                {{ row.other_user.username|slice:":1"|upper }}
+                {% if row.other_user.is_online %}
+                <div class="online-dot"></div>
+                {% endif %}
             </div>
-            <div class="chat-preview">
-                {% if row.last_message.user == request.user %}<span style="color:var(--accent);">Вы:</span>{% endif %}
-                {{ row.last_message.text|truncatechars:30 }}
+            <div class="chat-info">
+                <div class="chat-top">
+                    <span class="chat-name">{{ row.other_user.username }}</span>
+                    <span class="chat-time">{{ row.last_message.created_at|date:"H:i" }}</span>
+                </div>
+                <div class="chat-preview">
+                    {% if row.last_message.user == request.user %}<span style="color:var(--accent);">Вы:</span>{% endif %}
+                    {{ row.last_message.text|truncatechars:30 }}
+                </div>
             </div>
-        </div>
-    </a>
-    {% endfor %}
-</div>
-    </aside>
+        </a>
+        {% endfor %}
+    </div>
+</aside>
 
-    <main class="main-workspace">
+<main class="main-workspace">
     {% if not active_thread %}
     <div class="empty-state" id="emptyState">
         <div class="empty-state-card">💬 Выберите чат, чтобы начать общение</div>
@@ -144,9 +147,12 @@
     {% else %}
     <div class="active-chat-area" style="display: flex;">
         <header class="chat-header">
+            <a href="{% url 'chat_list' %}" class="back-btn">←</a>
+
             <div class="avatar" style="width: 40px; height: 40px; background: var(--accent);">
                 {{ active_other_user.username|slice:":1"|upper }}
             </div>
+
             <div class="profile-info" onclick="toggleRightPanel()">
                 <h2>{{ active_other_user.username }}</h2>
                 <div class="status-area">
@@ -168,24 +174,32 @@
 
         <div class="chat-input-area">
             {% if active_thread %}
-<form action="{% url 'chat_detail' active_thread.id %}" method="POST" class="input-box">
-    {% csrf_token %}
-    <textarea name="message" id="msgInput" placeholder="Написать сообщение..."></textarea>
-    <button type="submit" class="send-btn">➤</button>
-</form>
-{% endif %}
+            <form action="{% url 'chat_detail' active_thread.id %}" method="POST" class="input-box">
+                {% csrf_token %}
+                <textarea name="message" id="msgInput" placeholder="Написать сообщение..."></textarea>
+                <button type="submit" class="send-btn">➤</button>
+            </form>
+            {% endif %}
         </div>
     </div>
     {% endif %}
 </main>
 
-    <div class="context-menu" id="contextMenu">
-        <div class="context-item">Ответить</div>
-        <div class="context-item">Копировать текст</div>
-        <div class="context-item" style="color: #ff4444;">Удалить</div>
-    </div>
+<div class="context-menu" id="contextMenu">
+    <div class="context-item">Ответить</div>
+    <div class="context-item">Копировать текст</div>
+    <div class="context-item" style="color: #ff4444;">Удалить</div>
+</div>
 
-    <script>
+<script>
+
+    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    // JS находит твой <span> с badge и обновляет цифру
+    document.querySelector('.badge').innerText = data.new_count;
+};
 // === 1. ЛОГИКА ПОЛЯ ВВОДА (ENTER И АВТО-ВЫСОТА) ===
 const msgInput = document.getElementById('msgInput');
 const chatForm = msgInput ? msgInput.closest('form') : null;
@@ -247,7 +261,8 @@ document.addEventListener('keydown', function(e) {
 
         // Инициализация при загрузке
         renderThreads();
-    </script>
+
+</script>
 
 <script>
     // Функция для прокрутки чата вниз
@@ -261,6 +276,49 @@ document.addEventListener('keydown', function(e) {
 
     // Запускаем при загрузке страницы
     window.onload = scrollToBottom;
+
+</script>
+<script>
+    const threadId = "{{ active_thread.id }}";
+    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + threadId + '/');
+
+    // Логика получения сообщений и обновления счетчика
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'message') {
+            // Добавляем сообщение в чат... (код отрисовки)
+            // И обновляем badge, если он есть
+
+            }
+        }
+    };
+
+    // ОБРАБОТКА КЛАВИАТУРЫ
+    const msgInput = document.getElementById('msgInput');
+    msgInput.addEventListener('keydown', function(e) {
+        // Отправка по Enter
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (this.value.trim() !== "") {
+                // Отправляем через WebSocket
+                chatSocket.send(JSON.stringify({
+                    'type': 'chat_message',
+                    'text': this.value
+                }));
+                this.value = '';
+                this.style.height = 'auto'; // Сброс высоты
+            }
+        }
+        // Shift+Enter - перенос строки работает стандартно (ничего не делаем)
+    });
+
+    // Esc для выхода
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.location.href = "{% url 'chat_list' %}";
+        }
+    });
+
 </script>
 </body>
 </html>

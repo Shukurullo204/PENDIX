@@ -11,6 +11,7 @@ urlpatterns = [
     path('favorites/', include('favorites.urls')),
     path('reviews/', include('reviews.urls')),
     path('chat/', include('chat.urls')),
+    path('favorites/', include('favorites.urls')),
 ]
 
 # Настройка для медиа-файлов (изображения товаров)

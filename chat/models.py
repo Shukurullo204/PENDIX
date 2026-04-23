@@ -44,7 +44,7 @@ class Message(models.Model):
     edited_at = models.DateTimeField(null=True, blank=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         ordering = ['created_at']
         verbose_name = 'Сообще��ие'

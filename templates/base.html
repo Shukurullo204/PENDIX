@@ -554,9 +554,9 @@ font-size: 13px;
 
 <a href="{% url 'chat_list' %}" class="action-link">💬 <span>Чат</span></a>
 
-<a href="#" class="action-link">❤️ <span>Избранное</span></a>
-
-<a href="#" class="action-link">🔔 <span>Уведомления</span></a>
+<a href="{% url 'favorites:list' %}" class="action-link">
+    ❤️ <span>Избранное</span>
+</a>
 
 
 

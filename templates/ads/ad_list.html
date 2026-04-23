@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title %}Свежие объявления — PENDIX{% endblock %}
 
@@ -11,194 +12,236 @@
 
     <div class="ads-grid">
         {% for ad in ads %}
-            <article class="ad-item">
-                <a href="{% url 'ad_detail' ad.id %}" class="ad-link">
-                    <div class="ad-image-wrapper">
-                        {% with first_image=ad.images.first %}
-                            {% if first_image %}
-                                <img src="{{ first_image.image.url }}" alt="{{ ad.title }}">
-                            {% else %}
-                                <div class="ad-no-photo">
-                                    <i class="fa-solid fa-camera"></i>
-                                    <span>Нет фото</span>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+        <article class="ad-card">
+            <a href="{% url 'ad_detail' ad.id %}" class="ad-card__main-link">
+                <div class="ad-card__image">
+                    {% with first_image=ad.images.first %}
+                    {% if first_image %}
+                    <img src="{{ first_image.image.url }}" alt="{{ ad.title }}" loading="lazy">
+                    {% else %}
+                    <div class="ad-card__no-photo">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Нет фото</span>
                     </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
 
-                    <div class="ad-info">
-                        <h3 class="ad-title">{{ ad.title }}</h3>
+                <div class="ad-card__body">
+                    <h3 class="ad-card__title">{{ ad.title }}</h3>
 
-                        <div class="ad-meta">
-                            <span>{{ ad.created_at|date:"j M" }}</span>
-                            <span class="ad-dot">•</span>
-                            <span>
-                                {% if ad.address %}
-                                    {{ ad.address }}
-                                {% else %}
-                                    Ташкент
-                                {% endif %}
-                            </span>
-                        </div>
-
-                        <div class="ad-price">
-                            {{ ad.price|floatformat:"0" }} {{ ad.get_currency_display }}
-                        </div>
+                    <div class="ad-card__location">
+                        <i class="fa-solid fa-location-dot"></i>
+                        {{ ad.address|default:"Ташкент" }}
                     </div>
-                </a>
-            </article>
-        {% empty %}
-            <div class="ads-empty">
-                <i class="fa-regular fa-face-smile"></i>
-                <p>Пока ничего не найдено</p>
+                </div>
+            </a>
+
+            <div class="ad-card__footer">
+                <div class="ad-card__price">
+                    {{ ad.price|intcomma }} <span>{{ ad.get_currency_display }}</span>
+                </div>
+
+                <div class="fav-actions">
+                    <button class="btn-cancel-fav {% if ad.id in user_favorites %}active{% endif %}"
+                            onclick="this.nextElementSibling.dispatchEvent(new Event('submit'))">
+                        ✕
+                    </button>
+
+                    <form action="{% url 'favorites:toggle' ad.id %}" method="POST" class="fav-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-icon-fav" title="В избранное">
+                            <i class="fa-heart {% if ad.id in user_favorites %}fa-solid{% else %}fa-regular{% endif %}"
+                               style="color: {% if ad.id in user_favorites %}#e5005a{% else %}#adb5bd{% endif %};">
+                            </i>
+                        </button>
+                    </form>
+                </div>
             </div>
+        </article>
+        <div class="remove-btn" style="display: none;">✕</div>
+        {% empty %}
+        <div class="ads-empty">
+            <i class="fa-regular fa-face-smile"></i>
+            <p>Пока ничего не найдено</p>
+        </div>
         {% endfor %}
     </div>
+
+    {# Кнопка "Смотреть больше" появляется, если объявлений больше или равно 20 #}
+    {% if ads|length >= 20 %}
+    <div class="load-more-container">
+        <button class="btn-load-more">
+            <span>Смотреть больше</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </button>
+    </div>
+    {% endif %}
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.fav-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            const data = await response.json();
+
+            // Показываем уведомление (зеленый/красный)
+            showToast(data.message, data.status);
+
+            const icon = form.querySelector('i');
+            const cancelBtn = form.previousElementSibling; // Находим кнопку слева
+
+            if (data.status === 'added') {
+                icon.className = 'fa-solid fa-heart';
+                icon.style.color = '#e5005a';
+                cancelBtn.classList.add('active'); // Выезжает крестик
+            } else {
+                icon.className = 'fa-regular fa-heart';
+                icon.style.color = '#adb5bd';
+                cancelBtn.classList.remove('active'); // Уезжает крестик
+            }
+        });
+    });
+});
+
+function showToast(message, status) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.innerText = message;
+
+    // Зеленый если добавлено, красный если удалено
+    toast.style.backgroundColor = (status === 'added') ? '#2ecc71' : '#ff4d4d';
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+
+</script>
 <style>
-    .ads-page {
-        padding: 8px 0 24px;
-    }
 
-    .ads-head {
-        margin-bottom: 24px;
-    }
+/* Обновленный тост */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    z-index: 1000;
+    transition: background 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
 
-    .ads-head h2 {
-        margin: 0 0 6px;
-        font-size: 28px;
-        font-weight: 800;
-        color: #1a1a1a;
-    }
+/* Настройки для .fav-actions, чтобы они стояли ровно */
+.fav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
-    .ads-head p {
-        margin: 0;
-        color: #718688;
-        font-size: 14px;
-    }
+.btn-cancel-fav {
+    background: #ff4d4d; color: white; border: none; border-radius: 10px;
+    width: 0; height: 36px; padding: 0; overflow: hidden;
+    cursor: pointer; transition: all 0.3s ease; opacity: 0;
+    font-weight: bold;
+}
+.btn-cancel-fav.active { width: 36px; opacity: 1; }
+    /* Основные настройки страницы */
+    .ads-page { padding: 20px 0 40px; background-color: #f8f9fa; }
+    .ads-head { margin-bottom: 30px; }
+    .ads-head h2 { font-size: 28px; font-weight: 800; color: #1a1a1a; margin-bottom: 5px; }
+    .ads-head p { color: #7c8b8d; font-size: 14px; }
 
+    /* Сетка */
     .ads-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
     }
 
-    @media (max-width: 1100px) {
-        .ads-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 768px) {
-        .ads-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-        }
-    }
-
-    @media (max-width: 520px) {
-        .ads-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .ad-item {
+    /* Карточка */
+    .ad-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 12px;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .ad-link {
-        display: block;
-        text-decoration: none;
-        color: inherit;
+    .ad-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
     }
 
-    .ad-image-wrapper {
+    .ad-card__main-link { text-decoration: none; color: inherit; flex-grow: 1; }
+
+    .ad-card__image {
         width: 100%;
-        aspect-ratio: 16 / 10;
+        aspect-ratio: 1 / 1;
         border-radius: 16px;
         overflow: hidden;
         background: #f1f3f5;
         margin-bottom: 12px;
     }
 
-    .ad-image-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+    .ad-card__image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .ad-card__no-photo {
+        height: 100%; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; color: #adb5bd; gap: 5px;
     }
 
-    .ad-no-photo {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        color: #9aa9ab;
-        font-size: 14px;
+    .ad-card__title {
+        font-size: 15px; font-weight: 600; color: #1a1a1a;
+        margin: 5px 0 10px; line-height: 1.4;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        min-height: 42px;
     }
 
-    .ad-no-photo i {
-        font-size: 28px;
-    }
+    .ad-card__location { font-size: 12px; color: #7c8b8d; margin-bottom: 15px; display: flex; align-items: center; gap: 4px; }
 
-    .ad-title {
-        margin: 0 0 8px;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 1.35;
-        color: #1a1a1a;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .ad-meta {
+    .ad-card__footer {
         display: flex;
         align-items: center;
-        gap: 6px;
-        margin-bottom: 8px;
-        color: #7c8b8d;
-        font-size: 13px;
-        flex-wrap: wrap;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid #f8f9fa;
     }
 
-    .ad-dot {
-        font-size: 10px;
+    .ad-card__price { font-size: 19px; font-weight: 800; color: #1a1a1a; letter-spacing: -0.5px; }
+    .ad-card__price span { font-size: 14px; color: #555; font-weight: 600; }
+
+    .btn-icon-fav {
+        background: none; border: 1px solid #eee; width: 36px; height: 36px;
+        border-radius: 10px; display: flex; align-items: center; justify-content: center;
+        color: #adb5bd; cursor: pointer; transition: all 0.2s ease;
     }
 
-    .ad-price {
-        color: #111;
-        font-size: 18px;
-        font-weight: 800;
-    }
+    .btn-icon-fav:hover { background: #ffeef5; border-color: #e5005a; color: #e5005a; }
 
-    .ad-item:hover {
-        transform: translateY(-4px);
+    /* Кнопка "Смотреть больше" */
+    .load-more-container { display: flex; justify-content: center; margin-top: 40px; }
+    .btn-load-more {
+        display: flex; align-items: center; gap: 12px; background: #fff;
+        border: 1px solid #e0e0e0; padding: 14px 40px; border-radius: 14px;
+        font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
     }
+    .btn-load-more:hover { background: #f8f9fa; transform: translateY(-2px); border-color: #adb5bd; }
+    .btn-load-more i { color: #e5005a; font-size: 14px; }
 
-    .ad-item:hover .ad-title {
-        color: var(--hot-pink);
-    }
 
-    .ads-empty {
-        grid-column: 1 / -1;
-        min-height: 180px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        color: #8c9a9c;
-        background: #fff;
-        border-radius: 20px;
-    }
 
-    .ads-empty i {
-        font-size: 28px;
-    }
 </style>
 {% endblock %}

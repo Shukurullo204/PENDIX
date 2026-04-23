@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block title %}Избранные товары — PENDIX{% endblock %}
+
+{% block content %}
+<div class="favorites-container">
+    <div class="page-header">
+        <h1>❤️ Избранные товары</h1>
+        <p>Здесь хранятся объявления, которые вы сохранили.</p>
+    </div>
+
+    <div class="ads-grid" id="favorites-grid">
+        {% for fav in favorites %}
+            <article class="ad-card">
+                <form action="{% url 'favorites:toggle' fav.ad.id %}" method="POST" class="remove-favorite-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-remove" title="Удалить из избранного">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </form>
+
+                <a href="{% url 'ad_detail' fav.ad.id %}" class="ad-card__link">
+                    <div class="ad-card__image">
+                        {% if fav.ad.images.first %}
+                            <img src="{{ fav.ad.images.first.image.url }}" alt="{{ fav.ad.title }}" loading="lazy">
+                        {% else %}
+                            <div class="ad-card__no-photo"><span>Нет фото</span></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="ad-card__body">
+                        <h3 class="ad-card__title">{{ fav.ad.title }}</h3>
+                        <div class="ad-card__meta">
+                            {{ fav.ad.created_at|date:"j M" }} • {{ fav.ad.address|default:"Ташкент" }}
+                        </div>
+                        <div class="ad-card__price">
+                            {{ fav.ad.price|floatformat:"0" }} {{ fav.ad.get_currency_display }}
+                        </div>
+                    </div>
+                </a>
+
+                <div class="ad-card__actions">
+                    <a href="/chat/start/1/5/" class="btn-chat">
+                        <i class="fa-regular fa-comment"></i>
+                        <span>Начать общение</span>
+                    </a>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    <div id="empty-state-message" class="empty-state" style="display: {% if favorites %}none{% else %}block{% endif %};">
+        <i class="fa-regular fa-heart"></i>
+        <h2>Список пуст</h2>
+        <p>Добавляйте товары в избранное, чтобы не потерять их.</p>
+        <a href="/" class="btn-go-home">Перейти к покупкам</a>
+    </div>
+</div>
+<style>
+    /* Общие настройки страницы */
+    .favorites-container {
+        padding: 30px 0;
+        min-height: 80vh;
+    }
+
+    .page-header {
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin: 0 0 8px 0;
+    }
+
+    .page-header p {
+        color: #7c8b8d;
+        margin: 0;
+    }
+
+    /* Сетка */
+    .ads-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 20px;
+    }
+
+    /* Профессиональная карточка */
+    .ad-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 12px;
+        border: 1px solid #f0f0f0;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ad-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+    }
+
+    /* Кнопка удаления (X) */
+    .remove-favorite-form {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+    }
+
+    .btn-remove {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        transition: all 0.2s;
+    }
+
+    .btn-remove:hover {
+        background: #ff4d4d;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* Контент карточки */
+    .ad-card__link { text-decoration: none; color: inherit; }
+
+    .ad-card__image {
+        aspect-ratio: 1 / 1;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f8f9fa;
+        margin-bottom: 12px;
+    }
+
+    .ad-card__image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .ad-card__title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        height: 40px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .ad-card__price {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin-bottom: 15px;
+    }
+
+    .ad-card__meta {
+        font-size: 13px;
+        color: #8c9a9c;
+        margin-bottom: 8px;
+    }
+
+    /* Кнопка Чата (как на Olcha) */
+    .ad-card__actions {
+        margin-top: auto;
+    }
+
+    .btn-chat {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px;
+        background: #f1f3f5;
+        color: #1a1a1a;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .btn-chat:hover {
+        background: #e9ecef;
+    }
+
+    /* Пустое состояние */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 100px 0;
+    }
+
+    .empty-state i { font-size: 64px; color: #ddd; margin-bottom: 20px; }
+    .empty-state h2 { font-weight: 800; color: #1a1a1a; }
+    .empty-state p { color: #8c9a9c; }
+
+    .btn-go-home {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px;
+        background: #e5005a;
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 700;
+    }
+
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.remove-favorite-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'removed') {
+                // 1. Удаляем карточку
+                form.closest('.ad-card').remove();
+
+                // 2. Проверяем, остались ли еще карточки на странице
+                const remainingCards = document.querySelectorAll('.ad-card');
+
+                if (remainingCards.length === 0) {
+                    // Если карточек 0, показываем сообщение
+                    document.getElementById('empty-state-message').style.display = 'block';
+                }
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

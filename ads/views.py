@@ -6,6 +6,8 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from categories.models import Category
 from users.models import User
+# ИМПОРТИРУЕМ FAVORITE ОТТУДА, ГДЕ ОН РЕАЛЬНО ЛЕЖИТ
+from favorites.models import Favorite
 
 from .forms import AdForm
 from .models import Ad, AdImage
@@ -24,24 +26,31 @@ class AdListView(ListView):
             .select_related('category', 'author')
             .prefetch_related('images')
         )
-
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
                 Q(title__icontains=query) | Q(description__icontains=query)
             )
-
         category_id = self.request.GET.get('category')
         if category_id:
             queryset = queryset.filter(category_id=category_id)
-
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['all_categories'] = Category.objects.filter(parent__isnull=True)
-        return context
 
+        # 1. Логика для категорий
+        context['all_categories'] = Category.objects.filter(parent__isnull=True)
+
+        # 2. Логика для избранного
+        user_favorites = []
+        if self.request.user.is_authenticated:
+            # Получаем ID как целые числа
+            favorites_queryset = Favorite.objects.filter(user=self.request.user).values_list('ad_id', flat=True)
+            user_favorites = [int(fav_id) for fav_id in favorites_queryset]
+
+        context['user_favorites'] = user_favorites
+        return context
 
 class AdDetailView(DetailView):
     model = Ad
