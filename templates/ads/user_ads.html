@@ -98,7 +98,15 @@
 
         <div class="author-profile-header">
             <div class="author-info-left">
-                <div class="author-avatar-big"><i class="bi bi-person"></i></div>
+                <div class="author-avatar-big"
+                     style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    {% if author.avatar %}
+                    <img src="{{ author.avatar.url }}" alt="{{ author.username }}"
+                         style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                    <i class="bi bi-person"></i>
+                    {% endif %}
+                </div>
                 <div class="author-text-data">
                     <h1 class="author-name-title">{{ author.username }}</h1>
                     <div class="author-meta-lines">
@@ -107,13 +115,19 @@
                         <span style="color: #28a745; font-weight: 600;">Был онлайн недавно</span>
                     </div>
                 </div>
+            </div> {% if ads %}
+            <div class="ad-card__actions">
+                <a href="{% url 'create_or_get_chat' author.id ads.0.id %}" class="btn-msg-original"
+                   {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="чатом с продавцом"{% endif %}>
+                    <i class="fa-regular fa-comment"></i>
+                    <span>Написать продавцу</span>
+                </a>
             </div>
-            <a href="#" class="btn-msg-original">Написать сообщение</a>
-        </div>
-
-        <div class="author-filter-bar">
+            {% endif %}
+        </div> <div class="author-filter-bar">
             <form action="" method="get" class="author-search-box">
-                <input type="text" name="q" placeholder="Поиск в объявлениях автора" value="{{ request.GET.q }}">
+                <input type="text" name="q" placeholder="Поиск в объявлениях автора"
+                       value="{{ request.GET.q }}">
             </form>
 
             <form action="" method="get" class="d-flex align-items-center gap-2">
@@ -132,20 +146,25 @@
             {% for ad in ads %}
             <a href="{% url 'ad_detail' ad.id %}" class="ad-card">
                 <div class="ad-card-img-wrapper">
-                    {% if ad.images.all %}
-                        <img src="{{ ad.images.first.image.url }}" class="ad-card-img">
+                    {% with first_img=ad.images.first %}
+                    {% if first_img %}
+                    <img src="{{ first_img.image.url }}" class="ad-card-img" alt="{{ ad.title }}">
                     {% else %}
-                        <div class="ad-card-img d-flex align-items-center justify-content-center bg-light text-muted">📸</div>
+                    <div class="ad-card-img d-flex align-items-center justify-content-center bg-light text-muted">
+                        📸
+                    </div>
                     {% endif %}
+                    {% endwith %}
                 </div>
                 <div class="ad-card-body">
                     <div class="ad-card-title">{{ ad.title }}</div>
                     <div class="ad-card-price">{{ ad.price|floatformat:"0" }} $</div>
-                    <div class="ad-card-footer text-muted small mt-2">{{ ad.created_at|date:"j E" }} • Ташкент</div>
+                    <div class="ad-card-footer text-muted small mt-2">{{ ad.created_at|date:"j E" }} • Ташкент
+                    </div>
                 </div>
             </a>
             {% empty %}
-                <p class="text-muted w-100 text-center py-5">Ничего не найдено.</p>
+            <p class="text-muted w-100 text-center py-5">Ничего не найдено.</p>
             {% endfor %}
         </div>
 

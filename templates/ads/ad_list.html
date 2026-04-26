@@ -48,7 +48,8 @@
                         ✕
                     </button>
 
-                    <form action="{% url 'favorites:toggle' ad.id %}" method="POST" class="fav-form">
+                    <form action="{% url 'favorites:toggle' ad.id %}" method="POST" class="fav-form"
+                          {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="избранным"{% endif %}>
                         {% csrf_token %}
                         <button type="submit" class="btn-icon-fav" title="В избранное">
                             <i class="fa-heart {% if ad.id in user_favorites %}fa-solid{% else %}fa-regular{% endif %}"

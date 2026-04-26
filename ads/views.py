@@ -71,6 +71,12 @@ class AdDetailView(DetailView):
             .exclude(id=self.object.id)
             .prefetch_related('images')[:10]
         )
+        user_favorites = []
+        if self.request.user.is_authenticated:
+            favorites_queryset = Favorite.objects.filter(user=self.request.user).values_list('ad_id', flat=True)
+            user_favorites = [int(fav_id) for fav_id in favorites_queryset]
+
+        context['user_favorites'] = user_favorites
         return context
 
 
@@ -141,7 +147,7 @@ class UserAdListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['view_author'] = self.author
+        context['author'] = self.author
         return context
 
 

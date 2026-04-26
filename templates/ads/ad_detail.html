@@ -2,570 +2,631 @@
 
 {% block content %}
 <style>
-  :root {
-    --bg: #f5f7fb;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-
-    --primary: #ff006e;
-    --primary-weak: rgba(255, 0, 110, 0.10);
-
-    --success: #16a34a;
-
-    --shadow: 0 10px 25px rgba(2, 6, 23, 0.08);
-    --shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.06);
-
-    --r-sm: 10px;
-    --r-md: 14px;
-
-    --s-1: 8px;
-    --s-2: 12px;
-    --s-3: 16px;
-    --s-4: 24px;
-    --s-5: 32px;
-
-    --container: 1180px;
-    --transition: 160ms ease;
-
-    --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  }
-
-    * { box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-  }
-
-  a { color: inherit; text-decoration: none; }
-  a:hover { text-decoration: none; }
-
-  .page {
-    max-width: var(--container);
-    margin: 0 auto;
-    padding: var(--s-4) var(--s-3) var(--s-5);
-  }
-
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--s-3);
-    margin-bottom: var(--s-4);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    padding: 10px 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
-    user-select: none;
-    line-height: 1;
-  }
-
-  .btn:focus-visible {
-    outline: 3px solid rgba(255, 0, 110, 0.25);
-    outline-offset: 2px;
-  }
-
-  .btn--ghost {
-    background: rgba(255,255,255,0.7);
-    border-color: var(--border);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .btn--ghost:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow);
-  }
-
-  .btn--primary {
-    width: 100%;
-    background: var(--text);
-    color: #fff;
-  }
-
-  .btn--primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-
-  .btn--outline {
-    width: 100%;
-    background: #fff;
-    border-color: var(--border);
-    color: var(--text);
-  }
-
-  .btn--outline:hover {
-    border-color: rgba(255, 0, 110, 0.35);
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-1px);
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: var(--s-4);
-    align-items: start;
-  }
-
-  @media (max-width: 980px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-  }
-
-  .card__pad { padding: var(--s-4); }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 12px;
-    background: var(--primary-weak);
-    color: var(--primary);
-    border: 1px solid rgba(255, 0, 110, 0.18);
-  }
-
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-    color: var(--muted);
-    font-size: 13px;
-  }
-
-  .title {
-    margin: var(--s-2) 0 0;
-    font-size: 22px;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-  }
-
-  .price {
-    margin-top: var(--s-3);
-    background: linear-gradient(180deg, rgba(255, 0, 110, 0.12), rgba(255, 0, 110, 0.06));
-    border: 1px solid rgba(255, 0, 110, 0.18);
-    border-radius: var(--r-md);
-    padding: var(--s-3) var(--s-3);
-  }
-
-  .price__value {
-    font-size: 30px;
-    font-weight: 900;
-    color: var(--primary);
-    letter-spacing: -0.02em;
-  }
-
-  .divider { height: 1px; background: var(--border); border: 0; margin: var(--s-4) 0; }
-
-  /* ===== ГАЛЕРЕЯ ===== */
-  .gallery {
-    position: relative;
-  }
-
-  .gallery__main {
-    aspect-ratio: 4 / 3;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--s-4);
-    position: relative;
-    group: gallery;
-  }
-
-  .gallery__img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: var(--r-sm);
-    cursor: zoom-in;
-    transition: transform 0.2s ease;
-  }
-
-  .gallery__img.zoomed {
-    cursor: zoom-out;
-    transform: scale(2);
-  }
-
-  /* Стрелки навигации */
-  .gallery__nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease, background 0.3s ease;
-    z-index: 10;
-  }
-
-  .gallery__main:hover .gallery__nav {
-    opacity: 1;
-  }
-
-  .gallery__nav:hover {
-    background: rgba(0, 0, 0, 0.8);
-  }
-
-  .gallery__nav--prev {
-    left: 10px;
-  }
-
-  .gallery__nav--next {
-    right: 10px;
-  }
-
-  .gallery__thumbs {
-    display: flex;
-    gap: var(--s-2);
-    padding: var(--s-3);
-    border-top: 1px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-
-  .thumb {
-    flex: 0 0 auto;
-    width: 74px;
-    height: 54px;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    overflow: hidden;
-    padding: 0;
-    cursor: pointer;
-    background: #fff;
-    opacity: 0.75;
-    transition: opacity var(--transition), border-color var(--transition), transform var(--transition);
-  }
-
-  .thumb:hover { opacity: 0.95; transform: translateY(-1px); }
-  .thumb.is-active { opacity: 1; border-color: var(--primary); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-  .placeholder {
-    color: var(--muted);
-    background: #f8fafc;
-    border: 1px dashed var(--border);
-    border-radius: var(--r-md);
-    padding: var(--s-4);
-    width: 100%;
-    text-align: center;
-  }
-
-  /* Description */
-  .section-title {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 800;
-    margin: 0 0 var(--s-3);
-  }
-
-  .desc { color: var(--text); line-height: 1.75; }
-  .desc p { margin: 0 0 var(--s-2); }
-
-  .desc-footer {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--s-3);
-    flex-wrap: wrap;
-    color: var(--muted);
-    font-size: 13px;
-    align-items: center;
-  }
-
-  .report {
-    color: var(--primary);
-    font-weight: 800;
-  }
-
-  .report:hover { text-decoration: underline; }
-
-  /* Sidebar blocks */
-  .seller {
-    display: flex;
-    gap: var(--s-3);
-    align-items: center;
-  }
-
-  .seller__avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
-    background: rgba(255, 0, 110, 0.10);
-    border: 1px solid rgba(255, 0, 110, 0.20);
-    display: grid;
-    place-items: center;
-    color: var(--primary);
-    font-weight: 900;
-    font-size: 18px;
-    flex: 0 0 auto;
-  }
-
-  .seller__name { font-weight: 900; }
-  .seller__meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
-
-  .seller__all {
-    display: block;
-    margin-top: var(--s-3);
-    padding-top: var(--s-3);
-    border-top: 1px solid var(--border);
-    font-weight: 800;
-    color: var(--text);
-  }
-
-  .seller__all:hover { color: var(--primary); }
-
-  .loc {
-    display: grid;
-    gap: var(--s-2);
-  }
-
-  .loc__row {
-    display: flex;
-    gap: var(--s-2);
-    align-items: start;
-    color: var(--text);
-  }
-
-  .loc__label { font-weight: 900; }
-
-  .map {
-    height: 170px;
-    border-radius: var(--r-md);
-    border: 1px solid var(--border);
-    background:
-      radial-gradient(circle at 50% 55%, rgba(255, 0, 110, 0.16), transparent 44%),
-      linear-gradient(180deg, #ffffff, #f8fafc);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .map:hover {
-    box-shadow: var(--shadow);
-  }
-
-  .map::after {
-    content: "";
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px solid rgba(255, 0, 110, 0.55);
-    box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.22);
-    animation: pulse 1.9s infinite;
-  }
-
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.22); }
-    70%  { box-shadow: 0 0 0 14px rgba(255, 0, 110, 0.00); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.00); }
-  }
-
-  /* Similar */
-  .similar { margin-top: var(--s-5); }
-
-  .similar__title {
-    font-size: 18px;
-    font-weight: 900;
-    margin: 0 0 var(--s-3);
-  }
-
-  .strip {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(220px, 220px);
-    gap: var(--s-3);
-    overflow-x: auto;
-    padding-bottom: var(--s-2);
-    scrollbar-width: thin;
-  }
-
-  .mini {
-    border-radius: var(--r-md);
-    border: 1px solid var(--border);
-    background: #fff;
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: transform var(--transition), box-shadow var(--transition);
-  }
-
-  .mini:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-
-  .mini__img { height: 140px; background: #f1f5f9; }
-  .mini__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-  .mini__body { padding: var(--s-3); }
-
-  .mini__t {
-    font-weight: 900;
-    font-size: 13px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .mini__p { margin-top: var(--s-2); font-weight: 900; color: var(--primary); }
-
-  .sr-only {
-    position: absolute !important;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  /* ===== МОДАЛЬНОЕ ОКНО ДЛЯ ФОТО ===== */
-  .modal-gallery {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .modal-gallery.active {
-    display: flex;
-  }
-
-  .modal-gallery__container {
-    position: relative;
-    width: 90%;
-    max-width: 900px;
-    height: 80vh;
-  }
-
-  .modal-gallery__image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .modal-gallery__close {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .modal-gallery__close:hover {
-    background: rgba(255, 255, 255, 0.4);
-  }
-
-  .modal-gallery__nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .modal-gallery__nav:hover {
-    background: rgba(255, 255, 255, 0.4);
-  }
-
-  .modal-gallery__prev {
-    left: 10px;
-  }
-
-  .modal-gallery__next {
-    right: 10px;
-  }
-
-  .modal-gallery__thumbs {
-    position: absolute;
-    bottom: -80px;
-    left: 0;
-    right: 0;
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    padding: 0 20px;
-  }
-
-  .modal-gallery__thumb {
-    width: 60px;
-    height: 60px;
-    border: 2px solid transparent;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: all 0.3s ease;
-  }
-
-  .modal-gallery__thumb:hover {
-    opacity: 0.9;
-  }
-
-  .modal-gallery__thumb.active {
-    border-color: var(--primary);
-    opacity: 1;
-  }
-
-  .modal-gallery__thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+
+      --primary: #ff006e;
+      --primary-weak: rgba(255, 0, 110, 0.10);
+
+      --success: #16a34a;
+
+      --shadow: 0 10px 25px rgba(2, 6, 23, 0.08);
+      --shadow-sm: 0 2px 10px rgba(2, 6, 23, 0.06);
+
+      --r-sm: 10px;
+      --r-md: 14px;
+
+      --s-1: 8px;
+      --s-2: 12px;
+      --s-3: 16px;
+      --s-4: 24px;
+      --s-5: 32px;
+
+      --container: 1180px;
+      --transition: 160ms ease;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+
+      * { box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: none; }
+
+    .page {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: var(--s-4) var(--s-3) var(--s-5);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--s-3);
+      margin-bottom: var(--s-4);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
+      user-select: none;
+      line-height: 1;
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid rgba(255, 0, 110, 0.25);
+      outline-offset: 2px;
+    }
+
+    .btn--ghost {
+      background: rgba(255,255,255,0.7);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn--ghost:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn--primary {
+      width: 100%;
+      background: var(--text);
+      color: #fff;
+    }
+
+    .btn--primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+    .btn--outline {
+      width: 100%;
+      background: #fff;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn--outline:hover {
+      border-color: rgba(255, 0, 110, 0.35);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: var(--s-4);
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .card__pad { padding: var(--s-4); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+      background: var(--primary-weak);
+      color: var(--primary);
+      border: 1px solid rgba(255, 0, 110, 0.18);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s-2);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .title {
+      margin: var(--s-2) 0 0;
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .price {
+      margin-top: var(--s-3);
+      background: linear-gradient(180deg, rgba(255, 0, 110, 0.12), rgba(255, 0, 110, 0.06));
+      border: 1px solid rgba(255, 0, 110, 0.18);
+      border-radius: var(--r-md);
+      padding: var(--s-3) var(--s-3);
+    }
+
+    .price__value {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+    }
+
+    .divider { height: 1px; background: var(--border); border: 0; margin: var(--s-4) 0; }
+
+    /* ===== ГАЛЕРЕЯ ===== */
+    .gallery {
+      position: relative;
+    }
+
+    .gallery__main {
+      aspect-ratio: 4 / 3;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--s-4);
+      position: relative;
+      group: gallery;
+    }
+
+    .gallery__img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: var(--r-sm);
+      cursor: zoom-in;
+      transition: transform 0.2s ease;
+    }
+
+    .gallery__img.zoomed {
+      cursor: zoom-out;
+      transform: scale(2);
+    }
+
+    /* Стрелки навигации */
+    .gallery__nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease, background 0.3s ease;
+      z-index: 10;
+    }
+
+    .gallery__main:hover .gallery__nav {
+      opacity: 1;
+    }
+
+    .gallery__nav:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .gallery__nav--prev {
+      left: 10px;
+    }
+
+    .gallery__nav--next {
+      right: 10px;
+    }
+
+    .gallery__thumbs {
+      display: flex;
+      gap: var(--s-2);
+      padding: var(--s-3);
+      border-top: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .thumb {
+      flex: 0 0 auto;
+      width: 74px;
+      height: 54px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      padding: 0;
+      cursor: pointer;
+      background: #fff;
+      opacity: 0.75;
+      transition: opacity var(--transition), border-color var(--transition), transform var(--transition);
+    }
+
+    .thumb:hover { opacity: 0.95; transform: translateY(-1px); }
+    .thumb.is-active { opacity: 1; border-color: var(--primary); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .placeholder {
+      color: var(--muted);
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: var(--r-md);
+      padding: var(--s-4);
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Description */
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+      margin: 0 0 var(--s-3);
+    }
+
+    .desc { color: var(--text); line-height: 1.75; }
+    .desc p { margin: 0 0 var(--s-2); }
+
+    .desc-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--s-3);
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+      align-items: center;
+    }
+
+    .report {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .report:hover { text-decoration: underline; }
+
+    /* Sidebar blocks */
+    .seller {
+      display: flex;
+      gap: var(--s-3);
+      align-items: center;
+    }
+
+    .seller__avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: rgba(255, 0, 110, 0.10);
+      border: 1px solid rgba(255, 0, 110, 0.20);
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .seller__name { font-weight: 900; }
+    .seller__meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+    .seller__all {
+      display: block;
+      margin-top: var(--s-3);
+      padding-top: var(--s-3);
+      border-top: 1px solid var(--border);
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .seller__all:hover { color: var(--primary); }
+
+    .loc {
+      display: grid;
+      gap: var(--s-2);
+    }
+
+    .loc__row {
+      display: flex;
+      gap: var(--s-2);
+      align-items: start;
+      color: var(--text);
+    }
+
+    .loc__label { font-weight: 900; }
+
+    .map {
+      height: 170px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at 50% 55%, rgba(255, 0, 110, 0.16), transparent 44%),
+        linear-gradient(180deg, #ffffff, #f8fafc);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .map:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .map::after {
+      content: "";
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid rgba(255, 0, 110, 0.55);
+      box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.22);
+      animation: pulse 1.9s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.22); }
+      70%  { box-shadow: 0 0 0 14px rgba(255, 0, 110, 0.00); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.00); }
+    }
+
+    /* Similar */
+    .similar { margin-top: var(--s-5); }
+
+    .similar__title {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 var(--s-3);
+    }
+
+    .strip {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(220px, 220px);
+      gap: var(--s-3);
+      overflow-x: auto;
+      padding-bottom: var(--s-2);
+      scrollbar-width: thin;
+    }
+
+    .mini {
+      border-radius: var(--r-md);
+      border: 1px solid var(--border);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .mini:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+    .mini__img { height: 140px; background: #f1f5f9; }
+    .mini__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .mini__body { padding: var(--s-3); }
+
+    .mini__t {
+      font-weight: 900;
+      font-size: 13px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .mini__p { margin-top: var(--s-2); font-weight: 900; color: var(--primary); }
+
+    .meta--with-fav {
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detail-fav-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fav-form {
+      margin: 0;
+    }
+
+    .btn-cancel-fav {
+      background: #ff4d4d;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      width: 0;
+      height: 36px;
+      padding: 0;
+      overflow: hidden;
+      opacity: 0;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel-fav.active {
+      width: 36px;
+      opacity: 1;
+    }
+
+    .btn-icon-fav {
+      background: #fff;
+      border: 1px solid #e4e7ea;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #adb5bd;
+    }
+
+    .btn-icon-fav:hover {
+      background: #ffeef5;
+      border-color: #e5005a;
+      color: #e5005a;
+    }
+
+    .mini__actions {
+      padding: 0 var(--s-3) var(--s-3);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ===== МОДАЛЬНОЕ ОКНО ДЛЯ ФОТО ===== */
+    .modal-gallery {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-gallery.active {
+      display: flex;
+    }
+
+    .modal-gallery__container {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      height: 80vh;
+    }
+
+    .modal-gallery__image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .modal-gallery__close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-gallery__close:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .modal-gallery__nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-gallery__nav:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .modal-gallery__prev {
+      left: 10px;
+    }
+
+    .modal-gallery__next {
+      right: 10px;
+    }
+
+    .modal-gallery__thumbs {
+      position: absolute;
+      bottom: -80px;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 0 20px;
+    }
+
+    .modal-gallery__thumb {
+      width: 60px;
+      height: 60px;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+
+    .modal-gallery__thumb:hover {
+      opacity: 0.9;
+    }
+
+    .modal-gallery__thumb.active {
+      border-color: var(--primary);
+      opacity: 1;
+    }
+
+    .modal-gallery__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
 </style>
 
@@ -647,20 +708,39 @@
                 <h2 class="similar__title">Похожие объявления</h2>
                 <div class="strip" role="region" aria-label="Список похожих объявлений">
                     {% for item in similar_ads %}
-                    <a class="mini" href="{% url 'ad_detail' item.id %}"
-                       aria-label="Похожее объявление: {{ item.title }}">
-                        <div class="mini__img">
-                            {% with img=item.images.first %}
-                            {% if img %}
-                            <img src="{{ img.image.url }}" alt="{{ item.title }}" loading="lazy">
-                            {% endif %}
-                            {% endwith %}
+                    <article class="mini" aria-label="Похожее объявление: {{ item.title }}">
+                        <a href="{% url 'ad_detail' item.id %}" style="color: inherit; text-decoration: none;">
+                            <div class="mini__img">
+                                {% with img=item.images.first %}
+                                {% if img %}
+                                <img src="{{ img.image.url }}" alt="{{ item.title }}" loading="lazy">
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="mini__body">
+                                <div class="mini__t">{{ item.title }}</div>
+                                <div class="mini__p">{{ item.price|floatformat:"0" }} {{ item.get_currency_display }}
+                                </div>
+                            </div>
+                        </a>
+                        <div class="mini__actions">
+                            <div class="detail-fav-actions" data-ad-id="{{ item.id }}">
+                                <button type="button"
+                                        class="btn-cancel-fav {% if item.id in user_favorites %}active{% endif %}">✕
+                                </button>
+                                <form action="{% url 'favorites:toggle' item.id %}" method="POST" class="fav-form"
+                                      data-ad-id="{{ item.id }}"
+                                      {% if not user.is_authenticated %}data-auth-required="true"
+                                      data-auth-feature="избранным" {% endif %}>
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-icon-fav" title="В избранное">
+                                        <i class="fa-heart {% if item.id in user_favorites %}fa-solid{% else %}fa-regular{% endif %}"
+                                           style="color: {% if item.id in user_favorites %}#e5005a{% else %}#adb5bd{% endif %};"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="mini__body">
-                            <div class="mini__t">{{ item.title }}</div>
-                            <div class="mini__p">{{ item.price|floatformat:"0" }} {{ item.get_currency_display }}</div>
-                        </div>
-                    </a>
+                    </article>
                     {% endfor %}
                 </div>
             </section>
@@ -670,8 +750,23 @@
         <!-- RIGHT -->
         <aside aria-label="Панель">
             <article class="card card__pad" aria-label="Цена и действия">
-                <div class="meta">
+                <div class="meta meta--with-fav">
                     <span>Опубликовано {{ ad.created_at|date:"d E Y" }}</span>
+                    <div class="detail-fav-actions" data-ad-id="{{ ad.id }}">
+                        <button type="button" class="btn-cancel-fav {% if ad.id in user_favorites %}active{% endif %}">
+                            ✕
+                        </button>
+                        <form action="{% url 'favorites:toggle' ad.id %}" method="POST" class="fav-form"
+                              data-ad-id="{{ ad.id }}"
+                              {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="избранным"
+                              {% endif %}>
+                            {% csrf_token %}
+                            <button type="submit" class="btn-icon-fav" title="В избранное">
+                                <i class="fa-heart {% if ad.id in user_favorites %}fa-solid{% else %}fa-regular{% endif %}"
+                                   style="color: {% if ad.id in user_favorites %}#e5005a{% else %}#adb5bd{% endif %};"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 <h1 class="title">{{ ad.title }}</h1>
@@ -683,6 +778,8 @@
 
                 <div style="margin-top: var(--s-3); display: grid; gap: var(--s-2);">
                     <a class="btn btn--primary" href="{% url 'create_or_get_chat' ad.author.id ad.id %}"
+                       {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="чатом с продавцом"
+                       {% endif %}
                        aria-label="Написать сообщение продавцу">
                         <span aria-hidden="true">💬</span>
                         <span>Написать сообщение</span>
@@ -704,8 +801,14 @@
                 <h2 class="section-title">Пользователь</h2>
 
                 <div class="seller">
-                    <div class="seller__avatar" aria-hidden="true">
+                    <div class="seller__avatar" aria-hidden="true"
+                         style="overflow: hidden; display: grid; place-items: center;">
+                        {% if ad.author.avatar %}
+                        <img src="{{ ad.author.avatar.url }}" alt="{{ ad.author.username }}"
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
                         {{ ad.author.username|slice:":1"|upper }}
+                        {% endif %}
                     </div>
                     <div>
                         <div class="seller__name">{{ ad.author.username }}</div>
@@ -715,7 +818,8 @@
                     </div>
                 </div>
 
-                <a class="seller__all" href="{% url 'user_ads' ad.author.id %}">
+                <a class="seller__all"
+                   href="{% if user.is_authenticated and user.id == ad.author.id %}{% url 'profile_detail' user.id %}{% else %}{% url 'user_ads' ad.author.id %}{% endif %}">
                     Все объявления автора →
                 </a>
             </article>
@@ -769,153 +873,207 @@
 </main>
 
 <script>
-  // Данные галереи
-  const galleryData = [
-    {% for img in ad.images.all %}
-      { url: "{{ img.image.url }}", alt: "{{ ad.title }} - фото {{ forloop.counter }}" },
-    {% endfor %}
-  ];
+    // Данные галереи
+    const galleryData = [
+      {% for img in ad.images.all %}
+        { url: "{{ img.image.url }}", alt: "{{ ad.title }} - фото {{ forloop.counter }}" },
+      {% endfor %}
+    ];
 
-  let currentIndex = 0;
-  let isZoomed = false;
+    let currentIndex = 0;
+    let isZoomed = false;
 
-  // ========== ОСНОВНАЯ ГАЛЕРЕЯ ==========
-  function updateGallery(button, index) {
-    currentIndex = index;
-    const mainImage = document.getElementById('mainImage');
-    if (!mainImage) return;
+    // ========== ОСНОВНАЯ ГАЛЕРЕЯ ==========
+    function updateGallery(button, index) {
+      currentIndex = index;
+      const mainImage = document.getElementById('mainImage');
+      if (!mainImage) return;
 
-    mainImage.style.opacity = '0.65';
-    mainImage.src = galleryData[index].url;
-    isZoomed = false;
-    mainImage.classList.remove('zoomed');
+      mainImage.style.opacity = '0.65';
+      mainImage.src = galleryData[index].url;
+      isZoomed = false;
+      mainImage.classList.remove('zoomed');
 
-    setTimeout(() => {
-      mainImage.style.opacity = '1';
-    }, 120);
+      setTimeout(() => {
+        mainImage.style.opacity = '1';
+      }, 120);
 
-    document.querySelectorAll('.thumb').forEach((t) => t.classList.remove('is-active'));
-    button.classList.add('is-active');
-  }
+      document.querySelectorAll('.thumb').forEach((t) => t.classList.remove('is-active'));
+      button.classList.add('is-active');
+    }
 
-  function nextGallery() {
-    currentIndex = (currentIndex + 1) % galleryData.length;
-    const button = document.querySelectorAll('.thumb')[currentIndex];
-    updateGallery(button, currentIndex);
-  }
+    function nextGallery() {
+      currentIndex = (currentIndex + 1) % galleryData.length;
+      const button = document.querySelectorAll('.thumb')[currentIndex];
+      updateGallery(button, currentIndex);
+    }
 
-  function prevGallery() {
-    currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
-    const button = document.querySelectorAll('.thumb')[currentIndex];
-    updateGallery(button, currentIndex);
-  }
+    function prevGallery() {
+      currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
+      const button = document.querySelectorAll('.thumb')[currentIndex];
+      updateGallery(button, currentIndex);
+    }
 
-  // Двойной клик = зум
-  document.addEventListener('DOMContentLoaded', function() {
-    const mainImage = document.getElementById('mainImage');
-    if (mainImage) {
-      mainImage.addEventListener('dblclick', function() {
-        isZoomed = !isZoomed;
-        this.classList.toggle('zoomed');
+    // Двойной клик = зум
+    document.addEventListener('DOMContentLoaded', function() {
+      const mainImage = document.getElementById('mainImage');
+      if (mainImage) {
+        mainImage.addEventListener('dblclick', function() {
+          isZoomed = !isZoomed;
+          this.classList.toggle('zoomed');
+        });
+      }
+    });
+
+    // ========== МОДАЛЬНОЕ ОКНО ==========
+    function openModalGallery() {
+      const modal = document.getElementById('modalGallery');
+      modal.classList.add('active');
+      goToImageModal(currentIndex);
+    }
+
+    function closeModalGallery() {
+      const modal = document.getElementById('modalGallery');
+      modal.classList.remove('active');
+    }
+
+    function goToImageModal(index) {
+      currentIndex = index;
+      const modal = document.getElementById('modalGallery');
+      const img = document.getElementById('modalGalleryImage');
+
+      img.src = galleryData[index].url;
+
+      document.querySelectorAll('.modal-gallery__thumb').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
       });
     }
-  });
 
-  // ========== МОДАЛЬНОЕ ОКНО ==========
-  function openModalGallery() {
-    const modal = document.getElementById('modalGallery');
-    modal.classList.add('active');
-    goToImageModal(currentIndex);
-  }
+    function nextModalGallery() {
+      currentIndex = (currentIndex + 1) % galleryData.length;
+      goToImageModal(currentIndex);
+    }
 
-  function closeModalGallery() {
-    const modal = document.getElementById('modalGallery');
-    modal.classList.remove('active');
-  }
+    function prevModalGallery() {
+      currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
+      goToImageModal(currentIndex);
+    }
 
-  function goToImageModal(index) {
-    currentIndex = index;
-    const modal = document.getElementById('modalGallery');
-    const img = document.getElementById('modalGalleryImage');
+    // Клавиши стрелок в модальном окне
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('modalGallery');
+      if (!modal.classList.contains('active')) return;
 
-    img.src = galleryData[index].url;
-
-    document.querySelectorAll('.modal-gallery__thumb').forEach((t, i) => {
-      t.classList.toggle('active', i === index);
+      if (e.key === 'ArrowRight') nextModalGallery();
+      if (e.key === 'ArrowLeft') prevModalGallery();
+      if (e.key === 'Escape') closeModalGallery();
     });
-  }
 
-  function nextModalGallery() {
-    currentIndex = (currentIndex + 1) % galleryData.length;
-    goToImageModal(currentIndex);
-  }
+    // Клик на фото открывает модальное окно
+    document.addEventListener('DOMContentLoaded', function() {
+      const mainImage = document.getElementById('mainImage');
+      if (mainImage && galleryData.length > 0) {
+        mainImage.addEventListener('click', function() {
+          if (!isZoomed) {
+            openModalGallery();
+          }
+        });
+      }
+    });
 
-  function prevModalGallery() {
-    currentIndex = (currentIndex - 1 + galleryData.length) % galleryData.length;
-    goToImageModal(currentIndex);
-  }
+    // ========== ТЕЛЕФОН ==========
+    function revealPhone() {
+      const phoneText = document.getElementById('phoneText');
+      const phoneBtn = document.getElementById('phoneBtn');
+      const phone = "{{ ad.phone|default:'+998 90 123 45 67' }}";
 
-  // Клавиши стрелок в модальном окне
-  document.addEventListener('keydown', function(e) {
-    const modal = document.getElementById('modalGallery');
-    if (!modal.classList.contains('active')) return;
+      if (!phoneText || !phoneBtn) return;
 
-    if (e.key === 'ArrowRight') nextModalGallery();
-    if (e.key === 'ArrowLeft') prevModalGallery();
-    if (e.key === 'Escape') closeModalGallery();
-  });
+      phoneText.innerHTML = '<strong>' + phone + '</strong>';
+      phoneBtn.style.borderColor = 'rgba(22, 163, 74, 0.35)';
+      phoneBtn.style.color = 'var(--success)';
+      phoneBtn.setAttribute('aria-label', 'Номер телефона: ' + phone);
+      phoneBtn.disabled = true;
+    }
 
-  // Клик на фото открывает модальное окно
-  document.addEventListener('DOMContentLoaded', function() {
-    const mainImage = document.getElementById('mainImage');
-    if (mainImage && galleryData.length > 0) {
-      mainImage.addEventListener('click', function() {
-        if (!isZoomed) {
-          openModalGallery();
+    // ========== КАРТА ==========
+    function openMap() {
+      const address = "{% if ad.address %}{{ ad.address }}{% else %}Ташкент, Узбекистан{% endif %}";
+      const query = encodeURIComponent(address);
+
+      // Google Maps
+      window.open(`https://www.google.com/maps/search/${query}`, '_blank');
+
+      // Или Yandex Maps:
+      // window.open(`https://yandex.uz/maps/?text=${query}`, '_blank');
+
+      // Или 2GIS:
+      // window.open(`https://2gis.uz/search/${query}`, '_blank');
+    }
+
+    function syncFavoriteControls(adId, isActive) {
+      document.querySelectorAll(`.detail-fav-actions[data-ad-id="${adId}"]`).forEach((wrapper) => {
+        const cancelBtn = wrapper.querySelector('.btn-cancel-fav');
+        const icon = wrapper.querySelector('.btn-icon-fav i');
+        if (cancelBtn) {
+          cancelBtn.classList.toggle('active', isActive);
+        }
+        if (icon) {
+          icon.className = isActive ? 'fa-heart fa-solid' : 'fa-heart fa-regular';
+          icon.style.color = isActive ? '#e5005a' : '#adb5bd';
         }
       });
     }
-  });
 
-  // ========== ТЕЛЕФОН ==========
-  function revealPhone() {
-    const phoneText = document.getElementById('phoneText');
-    const phoneBtn = document.getElementById('phoneBtn');
-    const phone = "{{ ad.phone|default:'+998 90 123 45 67' }}";
-
-    if (!phoneText || !phoneBtn) return;
-
-    phoneText.innerHTML = '<strong>' + phone + '</strong>';
-    phoneBtn.style.borderColor = 'rgba(22, 163, 74, 0.35)';
-    phoneBtn.style.color = 'var(--success)';
-    phoneBtn.setAttribute('aria-label', 'Номер телефона: ' + phone);
-    phoneBtn.disabled = true;
-  }
-
-  // ========== КАРТА ==========
-  function openMap() {
-    const address = "{% if ad.address %}{{ ad.address }}{% else %}Ташкент, Узбекистан{% endif %}";
-    const query = encodeURIComponent(address);
-
-    // Google Maps
-    window.open(`https://www.google.com/maps/search/${query}`, '_blank');
-
-    // Или Yandex Maps:
-    // window.open(`https://yandex.uz/maps/?text=${query}`, '_blank');
-
-    // Или 2GIS:
-    // window.open(`https://2gis.uz/search/${query}`, '_blank');
-  }
-
-  // Закрытие модального окна по клику на фон
-  document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('modalGallery');
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeModalGallery();
+    async function submitFavoriteForm(form) {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      const data = await response.json();
+      const adId = form.dataset.adId;
+      if (adId && (data.status === 'added' || data.status === 'removed')) {
+        syncFavoriteControls(adId, data.status === 'added');
       }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.detail-fav-actions').forEach((wrapper) => {
+        const form = wrapper.querySelector('.fav-form');
+        const cancelBtn = wrapper.querySelector('.btn-cancel-fav');
+        if (!form) return;
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (cancelBtn.classList.contains('active')) {
+              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          });
+        }
+
+        form.addEventListener('submit', async function(e) {
+          if (form.dataset.authRequired === 'true') return;
+          e.preventDefault();
+          try {
+            await submitFavoriteForm(form);
+          } catch (error) {
+            console.error('Favorite toggle error:', error);
+          }
+        });
+      });
     });
-  });
+
+    // Закрытие модального окна по клику на фон
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('modalGallery');
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModalGallery();
+        }
+      });
+    });
 
 </script>
 

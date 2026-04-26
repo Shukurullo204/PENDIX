@@ -244,29 +244,12 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-        // === 7. CONTEXT MENU ===
-        const contextMenu = document.getElementById('contextMenu');
-        document.addEventListener('contextmenu', (e) => {
-            const bubble = e.target.closest('.context-target');
-            if (bubble) {
-                e.preventDefault();
-                contextMenu.style.left = `${e.pageX}px`;
-                contextMenu.style.top = `${e.pageY}px`;
-                contextMenu.classList.add('active');
-            } else {
-                contextMenu.classList.remove('active');
-            }
-        });
-        document.addEventListener('click', () => contextMenu.classList.remove('active'));
-
-        // Инициализация при загрузке
-        renderThreads();
+// Удален дублирующийся блок context menu/инициализации
 
 </script>
 
 <script>
     // Функция для прокрутки чата вниз
-    function scrollToBottom() {
     function scrollToBottom() {
         var chatHistory = document.getElementById("chatHistory");
         if (chatHistory) {
@@ -276,48 +259,6 @@ document.addEventListener('keydown', function(e) {
 
     // Запускаем при загрузке страницы
     window.onload = scrollToBottom;
-
-</script>
-<script>
-    const threadId = "{{ active_thread.id }}";
-    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + threadId + '/');
-
-    // Логика получения сообщений и обновления счетчика
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'message') {
-            // Добавляем сообщение в чат... (код отрисовки)
-            // И обновляем badge, если он есть
-
-            }
-        }
-    };
-
-    // ОБРАБОТКА КЛАВИАТУРЫ
-    const msgInput = document.getElementById('msgInput');
-    msgInput.addEventListener('keydown', function(e) {
-        // Отправка по Enter
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            if (this.value.trim() !== "") {
-                // Отправляем через WebSocket
-                chatSocket.send(JSON.stringify({
-                    'type': 'chat_message',
-                    'text': this.value
-                }));
-                this.value = '';
-                this.style.height = 'auto'; // Сброс высоты
-            }
-        }
-        // Shift+Enter - перенос строки работает стандартно (ничего не делаем)
-    });
-
-    // Esc для выхода
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            window.location.href = "{% url 'chat_list' %}";
-        }
-    });
 
 </script>
 </body>

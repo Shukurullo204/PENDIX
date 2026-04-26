@@ -552,9 +552,17 @@ font-size: 13px;
 
 <div class="header-actions">
 
-<a href="{% url 'chat_list' %}" class="action-link">💬 <span>Чат</span></a>
+<a
+    href="{% url 'chat_list' %}"
+    class="action-link"
+    {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="чатом"{% endif %}
+>💬 <span>Чат</span></a>
 
-<a href="{% url 'favorites:list' %}" class="action-link">
+<a
+    href="{% url 'favorites:list' %}"
+    class="action-link"
+    {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="избранным"{% endif %}
+>
     ❤️ <span>Избранное</span>
 </a>
 
@@ -631,6 +639,8 @@ font-size: 13px;
 {% block content %}{% endblock %}
 
 </main>
+<div id="authNotice" class="auth-notice" aria-live="polite"></div>
+<div id="authSuccessToast" class="auth-success-toast" aria-live="polite"></div>
 <div class="modal-overlay" id="authOverlay" onclick="closeAuthOutside(event)">
     <div class="auth-modal" onclick="event.stopPropagation()">
         <span class="close-modal" onclick="closeAuth()">&times;</span>
@@ -787,19 +797,24 @@ font-size: 13px;
 
     /* Модалка и Оверлей */
     .modal-overlay {
-        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;
-        opacity: 0; transition: opacity 0.3s ease;
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transition: opacity 0.2s ease, visibility 0s linear 0.2s;
     }
-    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-overlay.active {
+        opacity: 1; visibility: visible; pointer-events: auto;
+        transition: opacity 0.2s ease, visibility 0s linear 0s;
+    }
 
     .auth-modal {
         background: #fff; width: 900px; height: 500px; border-radius: 30px;
         overflow: hidden; position: relative; display: flex;
-        transform: scale(0.9); transition: 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        transform: scale(0.96); opacity: 0.98;
+        transition: transform 0.2s ease, opacity 0.2s ease;
         box-shadow: 0 25px 60px rgba(0,0,0,0.2);
     }
-    .modal-overlay.active .auth-modal { transform: scale(1); }
+    .modal-overlay.active .auth-modal { transform: scale(1); opacity: 1; }
 
     .close-modal {
         position: absolute; top: 25px; right: 30px; cursor: pointer;
@@ -847,6 +862,63 @@ font-size: 13px;
     }
     .perk-text-box h6 { margin: 0 0 3px 0; font-weight: 700; color: #1a1a1a; font-size: 16px; }
     .perk-text-box p { margin: 0; font-size: 13px; color: var(--grey-text); }
+
+    .auth-notice {
+        position: fixed;
+        top: 86px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 320px;
+        max-width: 80vw;
+        background: #fff2f2;
+        color: #b00020;
+        border: 2px solid #ff3b3b;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        text-align: center;
+        z-index: 3500;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .auth-notice.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    .auth-notice.shake {
+        animation: textShake 0.2s linear;
+    }
+
+    .auth-success-toast {
+        position: fixed;
+        right: 20px;
+        top: 86px;
+        background: #18a34a;
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        z-index: 3500;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        transform: translateY(-8px);
+    }
+    .auth-success-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @keyframes textShake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-50%) translateY(0) translateX(-5px); }
+        40% { transform: translateX(-50%) translateY(0) translateX(5px); }
+        60% { transform: translateX(-50%) translateY(0) translateX(-3px); }
+        80% { transform: translateX(-50%) translateY(0) translateX(3px); }
+        100% { transform: translateX(-50%) translateY(0) translateX(0); }
+    }
 </style>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -867,6 +939,76 @@ font-size: 13px;
             closeAuth();
         }
     }
+
+    function shakeScreen() {
+        const notice = document.getElementById('authNotice');
+        if (notice) {
+            notice.classList.remove('shake');
+            void notice.offsetWidth;
+            notice.classList.add('shake');
+        }
+
+        if (navigator.vibrate) {
+            navigator.vibrate(80);
+        }
+    }
+
+    function showAuthNotice(featureName) {
+        const notice = document.getElementById('authNotice');
+        if (!notice) return;
+
+        const label = featureName || 'этой функцией';
+        notice.textContent = `Чтобы пользоваться ${label}, нужно авторизоваться`;
+        notice.classList.add('show');
+
+        clearTimeout(window._authNoticeTimer);
+        window._authNoticeTimer = setTimeout(() => {
+            notice.classList.remove('show');
+        }, 2200);
+    }
+
+    function showSuccessToast(message) {
+        const toast = document.getElementById('authSuccessToast');
+        if (!toast) return;
+
+        toast.textContent = message;
+        toast.classList.add('show');
+
+        clearTimeout(window._authSuccessTimer);
+        window._authSuccessTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2200);
+    }
+
+    document.addEventListener('click', function (event) {
+        const restrictedLink = event.target.closest('[data-auth-required="true"]');
+        if (!restrictedLink) return;
+
+        event.preventDefault();
+        const featureName = restrictedLink.dataset.authFeature || restrictedLink.textContent.trim();
+        shakeScreen();
+        showAuthNotice(featureName);
+        openAuth();
+    });
+
+    document.addEventListener('submit', function (event) {
+        const restrictedForm = event.target.closest('form[data-auth-required="true"]');
+        if (!restrictedForm) return;
+
+        event.preventDefault();
+        const featureName = restrictedForm.dataset.authFeature || 'этой функцией';
+        shakeScreen();
+        showAuthNotice(featureName);
+        openAuth();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                showSuccessToast('{{ message|escapejs }}');
+            {% endif %}
+        {% endfor %}
+    });
 </script>
 {% block extra_js %}{% endblock %}
 

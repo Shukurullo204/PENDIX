@@ -40,7 +40,8 @@
                 </a>
 
                 <div class="ad-card__actions">
-                    <a href="/chat/start/1/5/" class="btn-chat">
+                    <a href="{% url 'create_or_get_chat' fav.ad.author.id fav.ad.id %}" class="btn-chat"
+                       {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="чатом с продавцом"{% endif %}>
                         <i class="fa-regular fa-comment"></i>
                         <span>Начать общение</span>
                     </a>

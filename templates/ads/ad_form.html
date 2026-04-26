@@ -2,9 +2,9 @@
 
 {% block title %}
 {% if form.instance.pk %}
-    Редактирование объявления — PENDIX
+Редактирование объявления — PENDIX
 {% else %}
-    Новое объявление — PENDIX
+Новое объявление — PENDIX
 {% endif %}
 {% endblock %}
 
@@ -691,16 +691,16 @@
             <div class="publish-top">
                 <h1>
                     {% if form.instance.pk %}
-                        Редактирование объявления
+                    Редактирование объявления
                     {% else %}
-                        Новое объявление
+                    Новое объявление
                     {% endif %}
                 </h1>
                 <p>
                     {% if form.instance.pk %}
-                        Обнови фотографии, описание, цену и контакты объявления.
+                    Обнови фотографии, описание, цену и контакты объявления.
                     {% else %}
-                        Короткая пошаговая форма: без длинного списка и лишней перегрузки.
+                    Короткая пошаговая форма: без длинного списка и лишней перегрузки.
                     {% endif %}
                 </p>
 
@@ -710,9 +710,9 @@
                     <div class="step-pill" data-step-pill="3">3. Контакты</div>
                     <div class="step-pill" data-step-pill="4">
                         {% if form.instance.pk %}
-                            4. Сохранение
+                        4. Сохранение
                         {% else %}
-                            4. Публикация
+                        4. Публикация
                         {% endif %}
                     </div>
                 </div>
@@ -721,17 +721,25 @@
             <!-- Body -->
             <div class="publish-body">
                 {% if form.non_field_errors %}
-                    <div class="field-errors" style="margin-bottom: 16px;">
-                        {{ form.non_field_errors }}
-                    </div>
+                <div class="field-errors" style="margin-bottom: 16px;">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                {% if form.errors %}
+                <div class="field-errors"
+                     style="margin-bottom: 16px; padding: 15px; border: 2px solid var(--color-error); border-radius: 8px; background: var(--color-error-bg);">
+                    <p style="margin-bottom: 10px; color: var(--color-error); font-weight: bold;">⚠️ Ошибки заполнения:</p>
+                    {{ form.errors }}
+                </div>
                 {% endif %}
 
                 <form
-                    method="post"
-                    enctype="multipart/form-data"
-                    id="main-ad-form"
-                    novalidate
-                    data-initial-step="{{ initial_step|default:1 }}"
+                        method="post"
+                        enctype="multipart/form-data"
+                        id="main-ad-form"
+                        novalidate
+                        data-initial-step="{{ initial_step|default:1 }}"
                 >
                     {% csrf_token %}
 
@@ -744,16 +752,23 @@
 
                         <div class="gallery-section">
                             <div class="gallery-grid" id="gallery-grid">
+                                {% if form.instance.pk %}
+                                    {% for image in form.instance.images.all %}
+                                        <div class="gallery-item">
+                                            <img src="{{ image.image.url }}" alt="Фото {{ forloop.counter }}">
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
                                 <div class="gallery-item add-photo" id="add-photo-btn">
                                     <span class="add-photo-icon">+</span>
                                 </div>
                             </div>
                             <input
-                                type="file"
-                                id="gallery-input"
-                                name="gallery"
-                                multiple
-                                accept="image/jpeg,image/jpg,image/png,image/webp"
+                                    type="file"
+                                    id="gallery-input"
+                                    name="gallery"
+                                    multiple
+                                    accept="image/jpeg,image/jpg,image/png,image/webp"
                             >
                             <div class="gallery-counter">
                                 <span id="gallery-count">0</span> / 10 фото
@@ -783,13 +798,14 @@
                         <div class="form-grid">
                             <!-- Title -->
                             <div class="input-group full-width">
-                                <label for="{{ form.title.id_for_label }}">Название товара <span style="color: var(--color-error);">*</span></label>
+                                <label for="{{ form.title.id_for_label }}">Название товара <span
+                                        style="color: var(--color-error);">*</span></label>
                                 {{ form.title }}
                                 <div class="field-hint">
                                     Коротко и конкретно: модель, состояние, главное преимущество.
                                 </div>
                                 {% if form.title.errors %}
-                                    <div class="field-errors">{{ form.title.errors }}</div>
+                                <div class="field-errors">{{ form.title.errors }}</div>
                                 {% endif %}
                             </div>
 
@@ -808,13 +824,14 @@
                                     ⚠️ Выберите категорию перед продолжением.
                                 </div>
                                 {% if form.category.errors %}
-                                    <div class="field-errors">{{ form.category.errors }}</div>
+                                <div class="field-errors">{{ form.category.errors }}</div>
                                 {% endif %}
                             </div>
 
                             <!-- Description -->
                             <div class="input-group full-width">
-                                <label for="{{ form.description.id_for_label }}">Описание <span style="color: var(--color-error);">*</span></label>
+                                <label for="{{ form.description.id_for_label }}">Описание <span
+                                        style="color: var(--color-error);">*</span></label>
                                 {{ form.description }}
                                 <div class="description-meta">
                                     <span class="field-hint">
@@ -826,7 +843,7 @@
                                     ⚠️ Описание должно содержать минимум 80 символов без учёта лишних пробелов.
                                 </div>
                                 {% if form.description.errors %}
-                                    <div class="field-errors">{{ form.description.errors }}</div>
+                                <div class="field-errors">{{ form.description.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -852,12 +869,13 @@
                             <div class="full-width">
                                 <div class="price-currency-row">
                                     <div class="input-group">
-                                        <label for="{{ form.price.id_for_label }}">Цена <span style="color: var(--color-error);">*</span></label>
+                                        <label for="{{ form.price.id_for_label }}">Цена <span
+                                                style="color: var(--color-error);">*</span></label>
                                         <div class="price-input-wrapper">
                                             {{ form.price }}
                                         </div>
                                         {% if form.price.errors %}
-                                            <div class="field-errors">{{ form.price.errors }}</div>
+                                        <div class="field-errors">{{ form.price.errors }}</div>
                                         {% endif %}
                                     </div>
 
@@ -865,7 +883,7 @@
                                         <label for="{{ form.currency.id_for_label }}">Валюта</label>
                                         {{ form.currency }}
                                         {% if form.currency.errors %}
-                                            <div class="field-errors">{{ form.currency.errors }}</div>
+                                        <div class="field-errors">{{ form.currency.errors }}</div>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -873,13 +891,14 @@
 
                             <!-- Phone -->
                             <div class="input-group full-width">
-                                <label for="{{ form.phone.id_for_label }}">Телефон <span style="color: var(--color-error);">*</span></label>
+                                <label for="{{ form.phone.id_for_label }}">Телефон <span
+                                        style="color: var(--color-error);">*</span></label>
                                 {{ form.phone }}
                                 <div class="field-hint">
                                     Укажи номер в формате, по которому с тобой действительно можно быстро связаться.
                                 </div>
                                 {% if form.phone.errors %}
-                                    <div class="field-errors">{{ form.phone.errors }}</div>
+                                <div class="field-errors">{{ form.phone.errors }}</div>
                                 {% endif %}
                             </div>
                         </div>
@@ -888,9 +907,9 @@
                             <div class="footer-note">
                                 Остался последний шаг — карта и
                                 {% if form.instance.pk %}
-                                    сохранение
+                                сохранение
                                 {% else %}
-                                    публикация
+                                публикация
                                 {% endif %}.
                             </div>
                             <div class="footer-actions">
@@ -904,13 +923,14 @@
                     <div class="wizard-step" data-step="4">
                         <h2 class="step-title">
                             {% if form.instance.pk %}
-                                📍 Сохранение изменений
+                            📍 Сохранение изменений
                             {% else %}
-                                📍 Укажи местоположение
+                            📍 Укажи местоположение
                             {% endif %}
                         </h2>
                         <p class="step-subtitle">
-                            Отметь точку на карте, чтобы пользователям было легче ориентироваться. Геолокация автоматически определит ваше положение.
+                            Отметь точку на карте, чтобы пользователям было легче ориентироваться. Геолокация
+                            автоматически определит ваше положение.
                         </p>
 
                         <!-- Map -->
@@ -933,18 +953,19 @@
                         <div class="wizard-footer">
                             <div class="footer-note">
                                 {% if form.instance.pk %}
-                                    Перед сохранением проверь описание, категорию, фотографии и контакты.
+                                Перед сохранением проверь описание, категорию, фотографии и контакты.
                                 {% else %}
-                                    Перед публикацией проверь все данные еще раз. Объявление появится в каталоге моментально!
+                                Перед публикацией проверь все данные еще раз. Объявление появится в каталоге
+                                моментально!
                                 {% endif %}
                             </div>
                             <div class="footer-actions">
                                 <button type="button" class="wizard-btn secondary" data-prev-step="3">Назад</button>
                                 <button type="submit" class="publish-btn">
                                     {% if form.instance.pk %}
-                                        ✓ Сохранить изменения
+                                    ✓ Сохранить изменения
                                     {% else %}
-                                        ✓ Опубликовать объявление
+                                    ✓ Опубликовать объявление
                                     {% endif %}
                                 </button>
                             </div>
@@ -967,16 +988,16 @@
 
         <div class="category-list">
             {% for value, text in form.fields.category.choices %}
-                {% if value %}
-                    <div
-                        class="cat-item {% if forloop.counter > 8 %}hidden-cat{% endif %}"
-                        data-value="{{ value }}"
-                        data-label="{{ text }}"
-                        onclick="selectCat('{{ text|escapejs }}', '{{ value|escapejs }}')"
-                    >
-                        <strong>{{ text }}</strong>
-                    </div>
-                {% endif %}
+            {% if value %}
+            <div
+                    class="cat-item {% if forloop.counter > 8 %}hidden-cat{% endif %}"
+                    data-value="{{ value }}"
+                    data-label="{{ text }}"
+                    onclick="selectCat('{{ text|escapejs }}', '{{ value|escapejs }}')"
+            >
+                <strong>{{ text }}</strong>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
 
@@ -995,6 +1016,7 @@
             this.maxPhotos = 10;
             this.minPhotos = 1;
             this.photos = [];
+            this.existingPhotos = [];
             this.init();
         }
 
@@ -1012,17 +1034,27 @@
             if (this.galleryInput) {
                 this.galleryInput.addEventListener('change', (e) => this.handleFileSelect(e));
             }
+
+            if (this.galleryGrid) {
+                this.existingPhotos = Array.from(
+                    this.galleryGrid.querySelectorAll('.gallery-item:not(.add-photo)')
+                ).map((item) => item.innerHTML);
+            }
+        }
+
+        getCurrentPhotoCount() {
+            return document.querySelectorAll('#gallery-grid .gallery-item:not(.add-photo)').length;
         }
 
         handleAddPhoto() {
-            if (this.photos.length < this.maxPhotos) {
+            if (this.getCurrentPhotoCount() < this.maxPhotos) {
                 this.galleryInput.click();
             }
         }
 
         handleFileSelect(e) {
             const files = Array.from(e.target.files);
-            const canAdd = this.maxPhotos - this.photos.length;
+            const canAdd = this.maxPhotos - this.getCurrentPhotoCount();
             const filesToAdd = files.slice(0, canAdd);
 
             filesToAdd.forEach(file => {
@@ -1061,6 +1093,14 @@
             // Clear gallery
             this.galleryGrid.innerHTML = '';
 
+            // Keep existing photos from server in edit mode
+            this.existingPhotos.forEach((content) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = content;
+                this.galleryGrid.appendChild(item);
+            });
+
             // Add photos
             this.photos.forEach((photo, index) => {
                 const item = document.createElement('div');
@@ -1079,7 +1119,7 @@
             });
 
             // Add button
-            if (this.photos.length < this.maxPhotos) {
+            if (this.getCurrentPhotoCount() < this.maxPhotos) {
                 const addBtn = document.createElement('div');
                 addBtn.className = 'gallery-item add-photo';
                 addBtn.id = 'add-photo-btn';
@@ -1089,16 +1129,17 @@
             }
 
             // Update counter
-            this.galleryCount.textContent = this.photos.length;
+            this.galleryCount.textContent = this.getCurrentPhotoCount();
 
             // Check validation
-            if (this.photos.length >= this.minPhotos) {
+            if (this.getCurrentPhotoCount() >= this.minPhotos) {
                 this.galleryError.style.display = 'none';
             }
         }
 
         isValid() {
-            return this.photos.length >= this.minPhotos && this.photos.length <= this.maxPhotos;
+            const totalPhotos = this.getCurrentPhotoCount();
+            return totalPhotos >= this.minPhotos && totalPhotos <= this.maxPhotos;
         }
     }
 
@@ -1279,8 +1320,29 @@
         const categoryModal = document.getElementById('categoryModal');
         const closeCategoryModal = document.getElementById('close-category-modal');
         const categoryInput = getCategoryInput();
+        const displayCat = document.getElementById('display-cat');
+        const latitudeInput = document.querySelector('input[name="latitude"]');
+        const longitudeInput = document.querySelector('input[name="longitude"]');
+        const initialLatitude = latitudeInput ? latitudeInput.value : '';
+        const initialLongitude = longitudeInput ? longitudeInput.value : '';
 
         let currentStep = form ? Number(form.dataset.initialStep || 1) : 1;
+
+        if (categoryInput && categoryInput.value && displayCat) {
+            const selectedCategory = document.querySelector(`.cat-item[data-value="${categoryInput.value}"]`);
+            if (selectedCategory) {
+                const label = selectedCategory.dataset.label || selectedCategory.textContent.trim();
+                displayCat.textContent = label;
+                displayCat.classList.remove('category-placeholder');
+                if (categoryTrigger) {
+                    categoryTrigger.classList.add('selected');
+                }
+            }
+        }
+
+        if (initialLatitude && initialLongitude) {
+            console.log('Loaded coordinates for edit mode:', initialLatitude, initialLongitude);
+        }
 
         // ==================== STEP UI UPDATE ====================
         function updateStepUI(step) {

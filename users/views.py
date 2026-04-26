@@ -19,12 +19,14 @@ def smart_auth_view(request):
             auth_user = authenticate(username=u_name, password=p_word)
             if auth_user:
                 login(request, auth_user)
+                messages.success(request, 'Вы успешно зашли')
                 return redirect('ad_list')
             else:
                 messages.error(request, 'Неверный пароль для этого логина!')
         else:
             new_user = User.objects.create_user(username=u_name, password=p_word)
             login(request, new_user)
+            messages.success(request, 'Вы успешно зашли')
             return redirect('ad_list')
     return redirect('ad_list')
 

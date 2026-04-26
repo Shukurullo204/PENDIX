@@ -1,4 +1,8 @@
-<a href="{% url 'ad_create' %}" class="post-ad-btn">
+<a
+    href="{% url 'ad_create' %}"
+    class="post-ad-btn"
+    {% if not user.is_authenticated %}data-auth-required="true" data-auth-feature="подачей объявлений"{% endif %}
+>
     <i class="fa-solid fa-plus"></i>
     <span>Подать объявление</span>
 </a>
