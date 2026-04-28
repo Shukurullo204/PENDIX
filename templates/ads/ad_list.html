@@ -69,7 +69,7 @@
         {% endfor %}
     </div>
 
-    {# Кнопка "Смотреть больше" появляется, если объявлений больше или равно 20 #}
+    
     {% if ads|length >= 20 %}
     <div class="load-more-container">
         <button class="btn-load-more">
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
 
-            // Показываем уведомление (зеленый/красный)
             showToast(data.message, data.status);
 
             const icon = form.querySelector('i');
@@ -117,7 +116,6 @@ function showToast(message, status) {
     toast.className = 'toast-message';
     toast.innerText = message;
 
-    // Зеленый если добавлено, красный если удалено
     toast.style.backgroundColor = (status === 'added') ? '#2ecc71' : '#ff4d4d';
 
     document.body.appendChild(toast);
@@ -128,7 +126,7 @@ function showToast(message, status) {
 </script>
 <style>
 
-/* Обновленный тост */
+
 .toast-message {
     position: fixed;
     bottom: 20px;
@@ -142,7 +140,7 @@ function showToast(message, status) {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Настройки для .fav-actions, чтобы они стояли ровно */
+
 .fav-actions {
     display: flex;
     align-items: center;
@@ -156,20 +154,20 @@ function showToast(message, status) {
     font-weight: bold;
 }
 .btn-cancel-fav.active { width: 36px; opacity: 1; }
-    /* Основные настройки страницы */
+    
     .ads-page { padding: 20px 0 40px; background-color: #f8f9fa; }
     .ads-head { margin-bottom: 30px; }
     .ads-head h2 { font-size: 28px; font-weight: 800; color: #1a1a1a; margin-bottom: 5px; }
     .ads-head p { color: #7c8b8d; font-size: 14px; }
 
-    /* Сетка */
+    
     .ads-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
     }
 
-    /* Карточка */
+    
     .ad-card {
         background: #fff;
         border-radius: 20px;
@@ -231,7 +229,7 @@ function showToast(message, status) {
 
     .btn-icon-fav:hover { background: #ffeef5; border-color: #e5005a; color: #e5005a; }
 
-    /* Кнопка "Смотреть больше" */
+    
     .load-more-container { display: flex; justify-content: center; margin-top: 40px; }
     .btn-load-more {
         display: flex; align-items: center; gap: 12px; background: #fff;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendix Chat - Hard Mode</title>
     <style>
-        /* === БАЗОВЫЕ ЦВЕТА (Твой любимый стиль) === */
+        
         :root {
             --bg-main: #0f0f0f;
             --bg-panel: #1a1a1a;
@@ -25,7 +25,7 @@
         ::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
         button, input, textarea { outline: none; border: none; background: transparent; font-family: inherit; }
 
-        /* === 1. ЛЕВЫЕ ПАНЕЛИ === */
+        
         .sidebar-mini { width: 70px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; z-index: 10; }
         .nav-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; font-size: 20px; transition: 0.2s; }
         .nav-icon:hover { background: var(--bg-hover); color: var(--text-main); }
@@ -49,7 +49,7 @@
         .chat-time { font-size: 12px; color: var(--text-muted); }
         .chat-preview { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* === 2. ЦЕНТРАЛЬНАЯ ЗОНА (ЧАТ) === */
+        
         .main-workspace { flex: 1; display: flex; position: relative; background: var(--bg-main); flex-direction: column; }
 
         .empty-state { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 2; background: var(--bg-main); }
@@ -58,7 +58,7 @@
         .active-chat-area { flex: 1; display: none; flex-direction: column; height: 100%; width: 100%; }
         .chat-header { height: 60px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 15px; }
 
-        .back-btn { display: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px; } /* Скрыта на ПК */
+        .back-btn { display: none; color: var(--text-main); font-size: 20px; cursor: pointer; padding: 5px; } 
 
         .profile-info { flex: 1; cursor: pointer; display: flex; flex-direction: column; }
         .profile-info h2 { font-size: 16px; margin: 0; font-weight: 600; }
@@ -68,7 +68,7 @@
 
         .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
         .msg-row { display: flex; width: 100%; margin-top: 10px; }
-        .msg-row.grouped { margin-top: 2px; } /* Уменьшенный отступ для группировки */
+        .msg-row.grouped { margin-top: 2px; } 
         .msg-row.own { justify-content: flex-end; }
 
         .msg-bubble { max-width: 70%; padding: 8px 12px; border-radius: 14px; font-size: 15px; line-height: 1.4; position: relative; word-wrap: break-word; white-space: pre-wrap; }
@@ -83,20 +83,20 @@
         .send-btn { color: var(--accent); font-size: 20px; cursor: pointer; padding: 5px; transition: 0.2s; }
         .send-btn:hover { transform: scale(1.1); }
 
-        /* === 3. КОНТЕКСТНОЕ МЕНЮ === */
+        
         .context-menu { position: fixed; background: #2c2c2c; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; display: none; flex-direction: column; padding: 5px 0; min-width: 160px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .context-menu.active { display: flex; }
         .context-item { padding: 8px 16px; font-size: 14px; color: white; cursor: pointer; display: flex; gap: 10px; }
         .context-item:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
 
-        /* === 4. АДАПТИВ (МОБИЛКА) === */
+        
         @media (max-width: 768px) {
             .sidebar-mini { display: none; }
             .chats-list-panel { width: 100%; }
             .main-workspace { display: none; width: 100%; position: absolute; top: 0; left: 0; height: 100%; z-index: 20; }
             body.chat-open .chats-list-panel { display: none; }
             body.chat-open .main-workspace { display: flex; }
-            .back-btn { display: block; } /* Показываем кнопку "назад" */
+            .back-btn { display: block; } 
         }
 
     </style>
@@ -127,11 +127,13 @@
             <div class="chat-info">
                 <div class="chat-top">
                     <span class="chat-name">{{ row.other_user.username }}</span>
-                    <span class="chat-time">{{ row.last_message.created_at|date:"H:i" }}</span>
+                    <span class="chat-time">{% if row.last_message %}{{ row.last_message.created_at|date:"H:i" }}{% endif %}</span>
                 </div>
                 <div class="chat-preview">
-                    {% if row.last_message.user == request.user %}<span style="color:var(--accent);">Вы:</span>{% endif %}
+                    {% if row.last_message %}
+                    {% if row.last_message.sender == request.user %}<span style="color:var(--accent);">Вы:</span>{% endif %}
                     {{ row.last_message.text|truncatechars:30 }}
+                    {% endif %}
                 </div>
             </div>
         </a>
@@ -156,14 +158,14 @@
             <div class="profile-info" onclick="toggleRightPanel()">
                 <h2>{{ active_other_user.username }}</h2>
                 <div class="status-area">
-                    <span class="status">{% if active_other_user.is_online %}в сети{% else %}был недавно{% endif %}</span>
+                    <span class="status">{{ active_other_user.activity_status }}</span>
                 </div>
             </div>
         </header>
 
         <div class="chat-history" id="chatHistory">
             {% for msg in messages %}
-            <div class="msg-row {% if msg.user == request.user %}own{% endif %}">
+            <div class="msg-row {% if msg.sender == request.user %}own{% endif %}" data-message-id="{{ msg.id }}">
                 <div class="msg-bubble">
                     {{ msg.text }}
                     <div class="msg-meta">{{ msg.created_at|date:"H:i" }}</div>
@@ -192,37 +194,112 @@
 </div>
 
 <script>
-
-    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
-
-chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    // JS находит твой <span> с badge и обновляет цифру
-    document.querySelector('.badge').innerText = data.new_count;
-};
-// === 1. ЛОГИКА ПОЛЯ ВВОДА (ENTER И АВТО-ВЫСОТА) ===
+const activeThreadId = "{% if active_thread %}{{ active_thread.id }}{% endif %}";
+const currentUserId = {{ request.user.id|default:"null" }};
+const chatHistory = document.getElementById('chatHistory');
 const msgInput = document.getElementById('msgInput');
 const chatForm = msgInput ? msgInput.closest('form') : null;
+let lastMessageId = 0;
+let chatSocket = null;
 
-if (msgInput && chatForm) {
-    msgInput.addEventListener('input', function() {
-        // Авто-высота textarea (ТЗ)
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-    });
+function scrollToBottom() {
+    if (chatHistory) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+}
 
-    msgInput.addEventListener('keydown', function(e) {
-        // Отправка по Enter (без Shift)
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            if (this.value.trim() !== "") {
-                chatForm.submit(); // Отправляем реальную Django-форму
-            }
+function escapeHtml(text) {
+    return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function appendMessage(msg, isOwn) {
+    if (!chatHistory) return;
+    if (document.querySelector(`[data-message-id="${msg.id}"]`)) return;
+
+    const row = document.createElement('div');
+    row.className = `msg-row ${isOwn ? 'own' : ''}`.trim();
+    row.dataset.messageId = msg.id;
+    row.innerHTML = `
+        <div class="msg-bubble">
+            ${escapeHtml(msg.text)}
+            <div class="msg-meta">${escapeHtml(msg.time || '')}</div>
+        </div>
+    `;
+    chatHistory.appendChild(row);
+    lastMessageId = Math.max(lastMessageId, Number(msg.id) || 0);
+    scrollToBottom();
+}
+
+function connectSocket() {
+    if (!activeThreadId) return;
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    chatSocket = new WebSocket(`${protocol}://${window.location.host}/ws/chat/${activeThreadId}/`);
+
+    chatSocket.onmessage = function (e) {
+        const packet = JSON.parse(e.data);
+        if (packet.type !== 'message' || !packet.data) return;
+        const msg = packet.data;
+        appendMessage(
+            { id: msg.message_id, text: msg.text, time: msg.time },
+            Number(msg.sender_id) === Number(currentUserId)
+        );
+    };
+}
+
+async function pollNewMessages() {
+    if (!activeThreadId) return;
+    try {
+        const response = await fetch(`/chat/api/${activeThreadId}/messages/?after_id=${lastMessageId}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        (data.messages || []).forEach((msg) => {
+            appendMessage(msg, Number(msg.sender_id) === Number(currentUserId));
+        });
+    } catch (e) {
+    }
+}
+
+function bootstrapLastId() {
+    if (!chatHistory) return;
+    chatHistory.querySelectorAll('.msg-row').forEach((row) => {
+        const id = Number(row.dataset.messageId || 0);
+        if (id > lastMessageId) {
+            lastMessageId = id;
         }
     });
 }
 
-// === 2. КОНТЕКСТНОЕ МЕНЮ (ДЛЯ КРАСОТЫ) ===
+if (msgInput && chatForm) {
+    msgInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = `${Math.min(this.scrollHeight, 150)}px`;
+    });
+
+    chatForm.addEventListener('submit', function (e) {
+        if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+            return;
+        }
+        e.preventDefault();
+        const text = msgInput.value.trim();
+        if (!text) return;
+        chatSocket.send(JSON.stringify({ type: 'chat_message', text }));
+        msgInput.value = '';
+        msgInput.style.height = 'auto';
+    });
+
+    msgInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.requestSubmit();
+        }
+    });
+}
+
 const contextMenu = document.getElementById('contextMenu');
 document.addEventListener('contextmenu', (e) => {
     const bubble = e.target.closest('.msg-bubble');
@@ -237,29 +314,18 @@ document.addEventListener('contextmenu', (e) => {
 });
 document.addEventListener('click', () => contextMenu.classList.remove('active'));
 
-// === 3. ЗАКРЫТИЕ НА ESCAPE ===
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         window.location.href = "{% url 'chat_list' %}";
     }
 });
 
-// Удален дублирующийся блок context menu/инициализации
-
-</script>
-
-<script>
-    // Функция для прокрутки чата вниз
-    function scrollToBottom() {
-        var chatHistory = document.getElementById("chatHistory");
-        if (chatHistory) {
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        }
-    }
-
-    // Запускаем при загрузке страницы
-    window.onload = scrollToBottom;
-
+window.addEventListener('load', function () {
+    bootstrapLastId();
+    scrollToBottom();
+    connectSocket();
+    setInterval(pollNewMessages, 5000);
+});
 </script>
 </body>
 </html>

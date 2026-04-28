@@ -58,7 +58,7 @@
     </div>
 </div>
 <style>
-    /* Общие настройки страницы */
+    
     .favorites-container {
         padding: 30px 0;
         min-height: 80vh;
@@ -80,14 +80,14 @@
         margin: 0;
     }
 
-    /* Сетка */
+    
     .ads-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
         gap: 20px;
     }
 
-    /* Профессиональная карточка */
+    
     .ad-card {
         background: #fff;
         border-radius: 20px;
@@ -104,7 +104,7 @@
         box-shadow: 0 15px 30px rgba(0,0,0,0.06);
     }
 
-    /* Кнопка удаления (X) */
+    
     .remove-favorite-form {
         position: absolute;
         top: 20px;
@@ -133,7 +133,7 @@
         transform: scale(1.1);
     }
 
-    /* Контент карточки */
+    
     .ad-card__link { text-decoration: none; color: inherit; }
 
     .ad-card__image {
@@ -170,7 +170,7 @@
         margin-bottom: 8px;
     }
 
-    /* Кнопка Чата (как на Olcha) */
+    
     .ad-card__actions {
         margin-top: auto;
     }
@@ -195,7 +195,7 @@
         background: #e9ecef;
     }
 
-    /* Пустое состояние */
+    
     .empty-state {
         grid-column: 1 / -1;
         text-align: center;
@@ -236,14 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.status === 'removed') {
-                // 1. Удаляем карточку
+
                 form.closest('.ad-card').remove();
 
-                // 2. Проверяем, остались ли еще карточки на странице
                 const remainingCards = document.querySelectorAll('.ad-card');
 
                 if (remainingCards.length === 0) {
-                    // Если карточек 0, показываем сообщение
+
                     document.getElementById('empty-state-message').style.display = 'block';
                 }
             } else {

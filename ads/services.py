@@ -1,11 +1,11 @@
 from django.db import transaction
 from .models import Ad, AdImage
 
-
+# нужен чтоб не было ошибки с загрузки
 class AdService:
     @staticmethod
     def create_ad(author, data, images=None):
-        """Атомарное создание объявления и сохранение галереи изображений"""
+
         payload = dict(data)
         payload.pop('gallery', None)
 

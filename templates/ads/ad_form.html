@@ -42,7 +42,7 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 
-    /* ============ LAYOUT ============ */
+    
     .publish-page {
         min-height: 100vh;
         padding: 32px 0 60px;
@@ -63,7 +63,7 @@
         overflow: hidden;
     }
 
-    /* ============ HEADER ============ */
+    
     .publish-top {
         padding: 24px;
         border-bottom: 1px solid #f3f4f6;
@@ -85,7 +85,7 @@
         line-height: 1.5;
     }
 
-    /* ============ STEPS BAR ============ */
+    
     .steps-bar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -109,12 +109,12 @@
         color: var(--color-dark);
     }
 
-    /* ============ BODY ============ */
+    
     .publish-body {
         padding: 24px;
     }
 
-    /* ============ WIZARD STEPS ============ */
+    
     .wizard-step {
         display: none;
         animation: fadeIn 0.3s ease;
@@ -143,7 +143,7 @@
         color: var(--color-text-secondary);
     }
 
-    /* ============ FORM GRID ============ */
+    
     .form-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -155,7 +155,7 @@
         grid-column: 1 / -1;
     }
 
-    /* ============ INPUT GROUP ============ */
+    
     .input-group {
         display: flex;
         flex-direction: column;
@@ -178,7 +178,7 @@
         color: #7d8f91;
     }
 
-    /* ============ FORM INPUTS ============ */
+    
     input[type="text"],
     input[type="tel"],
     input[type="number"],
@@ -212,7 +212,7 @@
         line-height: 1.55;
     }
 
-    /* ============ PRICE & CURRENCY ============ */
+    
     .price-currency-row {
         display: grid;
         grid-template-columns: 2fr 1fr;
@@ -240,7 +240,7 @@
         padding-left: 44px;
     }
 
-    /* ============ SELECT/DROPDOWN ============ */
+    
     select {
         cursor: pointer;
         appearance: none;
@@ -263,7 +263,7 @@
         background-color: #fafbfc;
     }
 
-    /* ============ ERRORS ============ */
+    
     .field-errors {
         padding: 10px 12px;
         border-radius: var(--radius-sm);
@@ -279,7 +279,7 @@
         padding-left: 18px;
     }
 
-    /* ============ GALLERY SECTION ============ */
+    
     .gallery-section {
         margin-bottom: 24px;
     }
@@ -375,7 +375,7 @@
         color: var(--color-error);
     }
 
-    /* ============ CATEGORY SELECTOR ============ */
+    
     .category-selector-btn {
         display: flex;
         justify-content: space-between;
@@ -413,7 +413,7 @@
         font-weight: 700;
     }
 
-    /* ============ MAP ============ */
+    
     .map-wrap {
         overflow: hidden;
         border: 1.5px solid var(--color-border);
@@ -440,7 +440,7 @@
         display: block;
     }
 
-    /* ============ FOOTER ============ */
+    
     .wizard-footer {
         display: flex;
         justify-content: space-between;
@@ -463,7 +463,7 @@
         margin-left: auto;
     }
 
-    /* ============ BUTTONS ============ */
+    
     .wizard-btn,
     .publish-btn {
         border: none;
@@ -514,7 +514,7 @@
         transform: none;
     }
 
-    /* ============ MODAL ============ */
+    
     .modal-overlay {
         position: fixed;
         inset: 0;
@@ -572,7 +572,7 @@
         color: var(--color-primary);
     }
 
-    /* ============ CATEGORIES LIST ============ */
+    
     .category-list {
         display: grid;
         gap: 10px;
@@ -616,7 +616,7 @@
         border-color: var(--color-primary);
     }
 
-    /* ============ RESPONSIVE ============ */
+    
     @media (max-width: 768px) {
         .publish-top h1 {
             font-size: 22px;
@@ -687,7 +687,7 @@
 <div class="publish-page">
     <div class="publish-shell">
         <div class="publish-card">
-            <!-- Header -->
+            
             <div class="publish-top">
                 <h1>
                     {% if form.instance.pk %}
@@ -718,7 +718,7 @@
                 </div>
             </div>
 
-            <!-- Body -->
+            
             <div class="publish-body">
                 {% if form.non_field_errors %}
                 <div class="field-errors" style="margin-bottom: 16px;">
@@ -743,7 +743,7 @@
                 >
                     {% csrf_token %}
 
-                    <!-- Step 1: Gallery -->
+                    
                     <div class="wizard-step active" data-step="1">
                         <h2 class="step-title">📸 Загрузи фотографии</h2>
                         <p class="step-subtitle">
@@ -788,7 +788,7 @@
                         </div>
                     </div>
 
-                    <!-- Step 2: Basic Info -->
+                    
                     <div class="wizard-step" data-step="2">
                         <h2 class="step-title">Основная информация</h2>
                         <p class="step-subtitle">
@@ -796,7 +796,7 @@
                         </p>
 
                         <div class="form-grid">
-                            <!-- Title -->
+                            
                             <div class="input-group full-width">
                                 <label for="{{ form.title.id_for_label }}">Название товара <span
                                         style="color: var(--color-error);">*</span></label>
@@ -809,7 +809,7 @@
                                 {% endif %}
                             </div>
 
-                            <!-- Category -->
+                            
                             <div class="input-group full-width">
                                 <label>Категория <span style="color: var(--color-error);">*</span></label>
                                 <button type="button" class="category-selector-btn" id="cat-trigger">
@@ -828,7 +828,7 @@
                                 {% endif %}
                             </div>
 
-                            <!-- Description -->
+                            
                             <div class="input-group full-width">
                                 <label for="{{ form.description.id_for_label }}">Описание <span
                                         style="color: var(--color-error);">*</span></label>
@@ -857,7 +857,7 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Price & Contacts -->
+                    
                     <div class="wizard-step" data-step="3">
                         <h2 class="step-title">💰 Цена и контакты</h2>
                         <p class="step-subtitle">
@@ -865,7 +865,7 @@
                         </p>
 
                         <div class="form-grid">
-                            <!-- Price & Currency -->
+                            
                             <div class="full-width">
                                 <div class="price-currency-row">
                                     <div class="input-group">
@@ -889,7 +889,7 @@
                                 </div>
                             </div>
 
-                            <!-- Phone -->
+                            
                             <div class="input-group full-width">
                                 <label for="{{ form.phone.id_for_label }}">Телефон <span
                                         style="color: var(--color-error);">*</span></label>
@@ -919,7 +919,7 @@
                         </div>
                     </div>
 
-                    <!-- Step 4: Map & Publish -->
+                    
                     <div class="wizard-step" data-step="4">
                         <h2 class="step-title">
                             {% if form.instance.pk %}
@@ -933,7 +933,7 @@
                             автоматически определит ваше положение.
                         </p>
 
-                        <!-- Map -->
+                        
                         <div class="map-wrap">
                             <div id="map"></div>
                         </div>
@@ -949,7 +949,7 @@
                         {{ form.latitude.as_hidden }}
                         {{ form.longitude.as_hidden }}
 
-                        <!-- Footer Actions -->
+                        
                         <div class="wizard-footer">
                             <div class="footer-note">
                                 {% if form.instance.pk %}
@@ -978,7 +978,7 @@
     </div>
 </div>
 
-<!-- Category Modal -->
+
 <div id="categoryModal" class="modal-overlay">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -1010,7 +1010,7 @@
 
 {% block extra_js %}
 <script>
-    // ==================== GALLERY MANAGEMENT ====================
+
     class GalleryManager {
         constructor() {
             this.maxPhotos = 10;
@@ -1068,7 +1068,7 @@
 
         isValidImage(file) {
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-            const validSize = file.size <= 5 * 1024 * 1024; // 5MB
+            const validSize = file.size <= 5 * 1024 * 1024;
             return validTypes.includes(file.type) && validSize;
         }
 
@@ -1090,10 +1090,9 @@
         }
 
         updateGalleryUI() {
-            // Clear gallery
+
             this.galleryGrid.innerHTML = '';
 
-            // Keep existing photos from server in edit mode
             this.existingPhotos.forEach((content) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
@@ -1101,7 +1100,6 @@
                 this.galleryGrid.appendChild(item);
             });
 
-            // Add photos
             this.photos.forEach((photo, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
@@ -1118,7 +1116,6 @@
                 this.galleryGrid.appendChild(item);
             });
 
-            // Add button
             if (this.getCurrentPhotoCount() < this.maxPhotos) {
                 const addBtn = document.createElement('div');
                 addBtn.className = 'gallery-item add-photo';
@@ -1128,10 +1125,8 @@
                 this.galleryGrid.appendChild(addBtn);
             }
 
-            // Update counter
             this.galleryCount.textContent = this.getCurrentPhotoCount();
 
-            // Check validation
             if (this.getCurrentPhotoCount() >= this.minPhotos) {
                 this.galleryError.style.display = 'none';
             }
@@ -1143,7 +1138,6 @@
         }
     }
 
-    // ==================== MODAL FUNCTIONS ====================
     function toggleModal(show) {
         const modal = document.getElementById('categoryModal');
         if (modal) {
@@ -1192,7 +1186,6 @@
         toggleModal(false);
     }
 
-    // ==================== VALIDATION FUNCTIONS ====================
     function normalizeDescriptionLength(value) {
         return value.replace(/\s+/g, ' ').trim().length;
     }
@@ -1205,7 +1198,7 @@
         const galleryError = document.getElementById('gallery-error');
 
         if (stepNumber === 1) {
-            // Validate gallery
+
             if (!galleryManager.isValid()) {
                 if (galleryError) galleryError.style.display = 'block';
                 return false;
@@ -1213,7 +1206,7 @@
         }
 
         if (stepNumber === 2) {
-            // Validate category
+
             if (!categoryInput.value) {
                 if (categoryError) categoryError.style.display = 'block';
                 return false;
@@ -1221,7 +1214,6 @@
                 if (categoryError) categoryError.style.display = 'none';
             }
 
-            // Validate description
             if (descriptionInput) {
                 const len = normalizeDescriptionLength(descriptionInput.value);
                 if (len < 80) {
@@ -1236,7 +1228,6 @@
         return true;
     }
 
-    // ==================== GEOLOCATION ====================
     function initializeMap() {
         const mapElement = document.getElementById('map');
         const mapError = document.getElementById('map-error');
@@ -1249,7 +1240,7 @@
         }
 
         try {
-            window._adMapInstance = L.map('map').setView([41.2995, 69.2401], 13); // Ташкент
+            window._adMapInstance = L.map('map').setView([41.2995, 69.2401], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
@@ -1272,7 +1263,6 @@
                 if (lonInput) lonInput.value = lng.toFixed(6);
             });
 
-            // Try geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -1301,11 +1291,10 @@
         }
     }
 
-    // ==================== MAIN INIT ====================
     let galleryManager;
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize gallery
+
         galleryManager = new GalleryManager();
 
         const form = document.getElementById('main-ad-form');
@@ -1344,7 +1333,6 @@
             console.log('Loaded coordinates for edit mode:', initialLatitude, initialLongitude);
         }
 
-        // ==================== STEP UI UPDATE ====================
         function updateStepUI(step) {
             currentStep = step;
 
@@ -1358,7 +1346,6 @@
                 pill.classList.toggle('done', pillStep < step);
             });
 
-            // Initialize map on step 4
             if (step === 4 && window._adMapInstance) {
                 setTimeout(() => {
                     window._adMapInstance.invalidateSize();
@@ -1367,19 +1354,16 @@
                 initializeMap();
             }
 
-            // Scroll to top
             document.querySelector('.publish-top').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         updateStepUI(currentStep);
 
-        // ==================== STEP NAVIGATION ====================
         document.querySelectorAll('[data-next-step]').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 const nextStep = Number(btn.dataset.nextStep);
 
-                // Validate before moving forward
                 if (validateStep(currentStep)) {
                     updateStepUI(nextStep);
                 }
@@ -1393,7 +1377,6 @@
             });
         });
 
-        // ==================== CATEGORY MODAL ====================
         if (categoryTrigger) {
             categoryTrigger.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -1415,7 +1398,6 @@
             });
         }
 
-        // ==================== DESCRIPTION COUNTER ====================
         if (descriptionInput) {
             descriptionInput.addEventListener('input', function () {
                 const len = normalizeDescriptionLength(this.value);
@@ -1435,7 +1417,6 @@
             descriptionInput.dispatchEvent(new Event('input'));
         }
 
-        // ==================== FORM SUBMISSION ====================
         if (form) {
             form.addEventListener('submit', function (e) {
                 if (!galleryManager.isValid()) {

@@ -175,7 +175,7 @@
 
     .divider { height: 1px; background: var(--border); border: 0; margin: var(--s-4) 0; }
 
-    /* ===== ГАЛЕРЕЯ ===== */
+    
     .gallery {
       position: relative;
     }
@@ -205,7 +205,7 @@
       transform: scale(2);
     }
 
-    /* Стрелки навигации */
+    
     .gallery__nav {
       position: absolute;
       top: 50%;
@@ -279,7 +279,7 @@
       text-align: center;
     }
 
-    /* Description */
+    
     .section-title {
       font-size: 12px;
       letter-spacing: 0.12em;
@@ -309,7 +309,7 @@
 
     .report:hover { text-decoration: underline; }
 
-    /* Sidebar blocks */
+    
     .seller {
       display: flex;
       gap: var(--s-3);
@@ -395,7 +395,7 @@
       100% { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.00); }
     }
 
-    /* Similar */
+    
     .similar { margin-top: var(--s-5); }
 
     .similar__title {
@@ -514,7 +514,7 @@
       border: 0;
     }
 
-    /* ===== МОДАЛЬНОЕ ОКНО ДЛЯ ФОТО ===== */
+    
     .modal-gallery {
       display: none;
       position: fixed;
@@ -644,7 +644,7 @@
     </header>
 
     <section class="grid" aria-label="Карточка объявления">
-        <!-- LEFT -->
+        
         <div>
             <article class="card gallery" aria-label="Галерея">
                 <div class="gallery__main" id="galleryContainer">
@@ -747,7 +747,7 @@
             {% endif %}
         </div>
 
-        <!-- RIGHT -->
+        
         <aside aria-label="Панель">
             <article class="card card__pad" aria-label="Цена и действия">
                 <div class="meta meta--with-fav">
@@ -813,7 +813,10 @@
                     <div>
                         <div class="seller__name">{{ ad.author.username }}</div>
                         <div class="seller__meta">На сайте с {{ ad.author.date_joined|date:"M Y" }}</div>
-                        <div class="seller__meta"><span style="color: var(--success); font-weight: 800;">● Онлайн</span>
+                        <div class="seller__meta">
+                            <span style="color: {% if ad.author.is_online %}var(--success){% else %}#64748b{% endif %}; font-weight: 800;">
+                                ● {{ ad.author.activity_status }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -846,7 +849,7 @@
         </aside>
     </section>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ПРОСМОТРА ФОТО ===== -->
+    
     <div class="modal-gallery" id="modalGallery">
         <div class="modal-gallery__container">
             <button class="modal-gallery__close" onclick="closeModalGallery()">✕</button>
@@ -873,7 +876,7 @@
 </main>
 
 <script>
-    // Данные галереи
+
     const galleryData = [
       {% for img in ad.images.all %}
         { url: "{{ img.image.url }}", alt: "{{ ad.title }} - фото {{ forloop.counter }}" },
@@ -883,7 +886,6 @@
     let currentIndex = 0;
     let isZoomed = false;
 
-    // ========== ОСНОВНАЯ ГАЛЕРЕЯ ==========
     function updateGallery(button, index) {
       currentIndex = index;
       const mainImage = document.getElementById('mainImage');
@@ -914,7 +916,6 @@
       updateGallery(button, currentIndex);
     }
 
-    // Двойной клик = зум
     document.addEventListener('DOMContentLoaded', function() {
       const mainImage = document.getElementById('mainImage');
       if (mainImage) {
@@ -925,7 +926,6 @@
       }
     });
 
-    // ========== МОДАЛЬНОЕ ОКНО ==========
     function openModalGallery() {
       const modal = document.getElementById('modalGallery');
       modal.classList.add('active');
@@ -959,7 +959,6 @@
       goToImageModal(currentIndex);
     }
 
-    // Клавиши стрелок в модальном окне
     document.addEventListener('keydown', function(e) {
       const modal = document.getElementById('modalGallery');
       if (!modal.classList.contains('active')) return;
@@ -969,7 +968,6 @@
       if (e.key === 'Escape') closeModalGallery();
     });
 
-    // Клик на фото открывает модальное окно
     document.addEventListener('DOMContentLoaded', function() {
       const mainImage = document.getElementById('mainImage');
       if (mainImage && galleryData.length > 0) {
@@ -981,7 +979,6 @@
       }
     });
 
-    // ========== ТЕЛЕФОН ==========
     function revealPhone() {
       const phoneText = document.getElementById('phoneText');
       const phoneBtn = document.getElementById('phoneBtn');
@@ -996,19 +993,15 @@
       phoneBtn.disabled = true;
     }
 
-    // ========== КАРТА ==========
     function openMap() {
       const address = "{% if ad.address %}{{ ad.address }}{% else %}Ташкент, Узбекистан{% endif %}";
       const query = encodeURIComponent(address);
 
-      // Google Maps
       window.open(`https://www.google.com/maps/search/${query}`, '_blank');
 
-      // Или Yandex Maps:
-      // window.open(`https://yandex.uz/maps/?text=${query}`, '_blank');
 
-      // Или 2GIS:
-      // window.open(`https://2gis.uz/search/${query}`, '_blank');
+
+
     }
 
     function syncFavoriteControls(adId, isActive) {
@@ -1065,7 +1058,6 @@
       });
     });
 
-    // Закрытие модального окна по клику на фон
     document.addEventListener('DOMContentLoaded', function() {
       const modal = document.getElementById('modalGallery');
       modal.addEventListener('click', function(e) {

@@ -44,7 +44,7 @@ body { background-color: var(--soft-pink); color: #333; min-height: 100vh; displ
 
 
 
-/* ===== ШАПКА (БОЛЬШАЯ И ЖИРНАЯ) ===== */
+
 
 .top-header {
 
@@ -116,7 +116,7 @@ gap: 14px;
 
 
 
-/* Стили для ссылок в шапке (Чат, Избранное, Уведомления) */
+
 
 .header-actions a.action-link {
 
@@ -228,7 +228,7 @@ box-shadow: 0 8px 25px rgba(255, 0, 110, 0.4);
 
 
 
-/* ===== ПОИСК ===== */
+
 
 .nav-section {
 
@@ -348,13 +348,13 @@ font-size: 18px;
 
 
 
-/* КОНТЕНТ */
+
 
 main { flex: 1; padding: 30px 0; }
 
 
 
-/* Профессиональный футер */
+
 
 .pro-footer {
 
@@ -787,7 +787,7 @@ font-size: 13px;
 </footer>
 
 <style>
-    /* Основные переменные */
+    
     :root {
         --olx-dark: #002f34;
         --hot-pink: #ff006e;
@@ -795,7 +795,7 @@ font-size: 13px;
         --grey-text: #7f9799;
     }
 
-    /* Модалка и Оверлей */
+    
     .modal-overlay {
         display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;
@@ -822,7 +822,7 @@ font-size: 13px;
     }
     .close-modal:hover { color: var(--hot-pink); }
 
-    /* Левая колонка */
+    
     .auth-left { padding: 60px; display: flex; flex-direction: column; justify-content: center; }
     .auth-main-title { font-size: 32px; font-weight: 800; color: var(--olx-dark); margin-bottom: 8px; }
     .auth-subtitle { font-size: 15px; color: var(--grey-text); margin-bottom: 25px; }
@@ -847,7 +847,7 @@ font-size: 13px;
         text-align: center; color: #adb5bd; font-weight: 600; font-size: 15px; cursor: not-allowed;
     }
 
-    /* Правая колонка */
+    
     .auth-right {
         background-color: var(--light-pink-bg); padding: 60px;
         display: flex; flex-direction: column; justify-content: center;
@@ -923,17 +923,15 @@ font-size: 13px;
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Открыть окно
+
     function openAuth() {
         document.getElementById('authOverlay').classList.add('active');
     }
 
-    // Закрыть окно
     function closeAuth() {
         document.getElementById('authOverlay').classList.remove('active');
     }
 
-    // Закрыть окно, если кликнули на темный фон вокруг него
     function closeAuthOutside(event) {
         if (event.target.id === 'authOverlay') {
             closeAuth();
