@@ -8,17 +8,11 @@ from django.urls import reverse
 
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-
-
 from categories.models import Category
 
 from users.models import User
 
-                                                   
-
 from favorites.models import Favorite
-
-
 
 from .forms import AdForm
 
@@ -27,11 +21,7 @@ from .models import Ad, AdImage
 from .services import AdService
 
 
-
-
-
 class AdListView(ListView):
-
     model = Ad
 
     template_name = 'ads/ad_list.html'
@@ -39,8 +29,6 @@ class AdListView(ListView):
     context_object_name = 'ads'
 
     paginate_by = 12
-
-
 
     def get_queryset(self):
 
@@ -57,7 +45,6 @@ class AdListView(ListView):
         query = self.request.GET.get('q')
 
         if query:
-
             queryset = queryset.filter(
 
                 Q(title__icontains=query) | Q(description__icontains=query)
@@ -67,57 +54,36 @@ class AdListView(ListView):
         category_id = self.request.GET.get('category')
 
         if category_id:
-
             queryset = queryset.filter(category_id=category_id)
 
         return queryset
-
-
 
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
 
-
-
-                                 
-
         context['all_categories'] = Category.objects.filter(parent__isnull=True)
-
-
-
-                                  
 
         user_favorites = []
 
         if self.request.user.is_authenticated:
-
-                                         
-
             favorites_queryset = Favorite.objects.filter(user=self.request.user).values_list('ad_id', flat=True)
 
             user_favorites = [int(fav_id) for fav_id in favorites_queryset]
-
-
 
         context['user_favorites'] = user_favorites
 
         return context
 
 
-
 class AdDetailView(DetailView):
-
     model = Ad
 
     template_name = 'ads/ad_detail.html'
 
     context_object_name = 'ad'
 
-
-
     def get_queryset(self):
-
         return (
 
             Ad.objects.filter(status='active')
@@ -128,10 +94,7 @@ class AdDetailView(DetailView):
 
         )
 
-
-
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         context['similar_ads'] = (
@@ -147,28 +110,19 @@ class AdDetailView(DetailView):
         user_favorites = []
 
         if self.request.user.is_authenticated:
-
             favorites_queryset = Favorite.objects.filter(user=self.request.user).values_list('ad_id', flat=True)
 
             user_favorites = [int(fav_id) for fav_id in favorites_queryset]
-
-
 
         context['user_favorites'] = user_favorites
 
         return context
 
 
-
-
-
 class AdCreateView(LoginRequiredMixin, CreateView):
-
     form_class = AdForm
 
     template_name = 'ads/ad_form.html'
-
-
 
     def get_form_kwargs(self):
 
@@ -178,47 +132,34 @@ class AdCreateView(LoginRequiredMixin, CreateView):
 
         return kwargs
 
-
-
     def get_invalid_step(self, form):
 
         if form.errors.get('gallery'):
-
             return 1
 
-
-
         if (
 
-            form.errors.get('title')
+                form.errors.get('title')
 
-            or form.errors.get('category')
+                or form.errors.get('category')
 
-            or form.errors.get('description')
+                or form.errors.get('description')
 
         ):
-
             return 2
 
-
-
         if (
 
-            form.errors.get('price')
+                form.errors.get('price')
 
-            or form.errors.get('currency')
+                or form.errors.get('currency')
 
-            or form.errors.get('phone')
+                or form.errors.get('phone')
 
         ):
-
             return 3
 
-
-
         return 4
-
-
 
     def form_invalid(self, form):
 
@@ -236,8 +177,6 @@ class AdCreateView(LoginRequiredMixin, CreateView):
 
         )
 
-
-
     def form_valid(self, form):
 
         images = self.request.FILES.getlist('gallery')
@@ -245,8 +184,6 @@ class AdCreateView(LoginRequiredMixin, CreateView):
         data = form.cleaned_data.copy()
 
         data.pop('gallery', None)
-
-
 
         AdService.create_ad(
 
@@ -261,11 +198,7 @@ class AdCreateView(LoginRequiredMixin, CreateView):
         return redirect('ad_list')
 
 
-
-
-
 class UserAdListView(ListView):
-
     model = Ad
 
     template_name = 'ads/user_ads.html'
@@ -274,10 +207,7 @@ class UserAdListView(ListView):
 
     paginate_by = 12
 
-
-
     def get_queryset(self):
-
         self.author = get_object_or_404(User, id=self.kwargs['user_id'])
 
         return (
@@ -290,10 +220,7 @@ class UserAdListView(ListView):
 
         )
 
-
-
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
 
         context['author'] = self.author
@@ -301,24 +228,16 @@ class UserAdListView(ListView):
         return context
 
 
-
-
-
 class AdUpdateView(LoginRequiredMixin, UpdateView):
-
     model = Ad
 
     form_class = AdForm
 
     template_name = 'ads/ad_form.html'
 
-
-
     def get_queryset(self):
 
         return Ad.objects.filter(author=self.request.user)
-
-
 
     def get_form_kwargs(self):
 
@@ -328,11 +247,7 @@ class AdUpdateView(LoginRequiredMixin, UpdateView):
 
         return kwargs
 
-
-
     def get_invalid_step(self, form):
-
-                                         
 
         if (
 
@@ -343,10 +258,7 @@ class AdUpdateView(LoginRequiredMixin, UpdateView):
                 or form.errors.get('description')
 
         ):
-
-            return 2                   
-
-
+            return 2
 
         if (
 
@@ -357,14 +269,9 @@ class AdUpdateView(LoginRequiredMixin, UpdateView):
                 or form.errors.get('phone')
 
         ):
-
-            return 3                    
-
-
+            return 3
 
         return 4
-
-
 
     def form_invalid(self, form):
 
@@ -382,27 +289,18 @@ class AdUpdateView(LoginRequiredMixin, UpdateView):
 
         )
 
-
-
     def form_valid(self, form):
 
         self.object = form.save()
-
-
 
         images = self.request.FILES.getlist('gallery')
 
         if images:
 
             for image in images:
-
                 AdImage.objects.create(ad=self.object, image=image)
 
-
-
         return redirect('ad_detail', pk=self.object.pk)
-
-
 
     def get_success_url(self):
 

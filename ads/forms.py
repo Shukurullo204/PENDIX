@@ -1,25 +1,13 @@
 from django import forms
 
-
-
 from .models import Ad
 
 
-
-
-
 class MultiFileInput(forms.ClearableFileInput):
-
     allow_multiple_selected = True
 
 
-
-
-
 class AdForm(forms.ModelForm):
-
-
-
     class Meta:
 
         model = Ad
@@ -70,33 +58,23 @@ class AdForm(forms.ModelForm):
 
         }
 
-
-
     def __init__(self, *args, **kwargs):
 
         user = kwargs.pop('user', None)
 
         super().__init__(*args, **kwargs)
 
-
-
         if user and not self.instance.pk:
 
             if hasattr(user, 'phone') and user.phone:
-
                 self.fields['phone'].initial = user.phone
-
-
 
         for field_name, field in self.fields.items():
 
             if not isinstance(field.widget, forms.HiddenInput):
-
                 existing_classes = field.widget.attrs.get('class', '')
 
                 field.widget.attrs['class'] = f'{existing_classes} form-control'.strip()
-
-
 
     def clean_description(self):
 
@@ -104,12 +82,7 @@ class AdForm(forms.ModelForm):
 
         normalized = ' '.join(value.split())
 
-
-
         if len(normalized) < 80:
-
             raise forms.ValidationError('')
-
-
 
         return value.strip()

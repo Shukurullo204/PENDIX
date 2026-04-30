@@ -1,6 +1,7 @@
 from django.db import transaction
 from .models import Ad, AdImage
 
+
 # нужен чтоб не было ошибки с загрузки
 class AdService:
     @staticmethod

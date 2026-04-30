@@ -1,6 +1,7 @@
 from django.utils import timezone
-
-
+# middleware это функция которая отслеживает ваши дейстивия и считает мы его используем
+# для функции "недавно" как работает? вот представим middelware таймер а функция is_online
+# кнопка и эту конпку нужно нажать когда пройдет больше 5 мин вот так и работает middelware
 class LastSeenMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
